@@ -1,0 +1,20 @@
+{
+  "name": "video-skills",
+  "version": "0.1.0",
+  "description": "Skills that turn a named recipe plus parameters into a rendered HyperFrames motion graphic",
+  "type": "module",
+  "main": ".opencode/plugins/video.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dEitY719/video-skills.git"
+  },
+  "keywords": [
+    "skills",
+    "plugin",
+    "marketplace",
+    "video",
+    "hyperframes",
+    "motion-graphics"
+  ]
+}

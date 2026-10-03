@@ -1,0 +1,19 @@
+name: board-sync
+
+# Puts every new issue and pull request on the shared `skills-plugins` board. The
+# logic lives in `dEitY719/harness-skills` so a fix lands once for all
+# *-skills repos.
+
+on:
+  issues:
+    types: [opened, reopened, transferred]
+  pull_request:
+    types: [opened, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  board-sync:
+    uses: dEitY719/harness-skills/.github/workflows/add-to-project.yml@main
+    secrets: inherit

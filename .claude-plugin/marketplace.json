@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "video-skills",
+  "description": "Recipe-driven HyperFrames motion-graphic skills - one parameterized skeleton per recipe, rendered through the official hyperframes plugin",
+  "owner": {
+    "name": "dEitY719",
+    "url": "https://github.com/dEitY719"
+  },
+  "plugins": [
+    {
+      "name": "video",
+      "description": "Recipe-driven HyperFrames motion graphics. One skill, hf-motion, scaffolds a parameterized project from a named recipe (intro-kinetic: a 15 s kinetic-typography self-introduction), fills it from key=value parameters, lints, checks, snapshots and renders it through the official hyperframes plugin. Same skeleton, swap the content.",
+      "homepage": "https://github.com/dEitY719/video-skills",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "dEitY719",
+        "url": "https://github.com/dEitY719"
+      }
+    }
+  ]
+}

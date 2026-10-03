@@ -1,0 +1,69 @@
+[
+  {
+    "query": "/video:hf-motion intro-kinetic name=홍길동 team=가나다팀",
+    "should_trigger": true,
+    "note": "slash-literal: update if the skill is renamed"
+  },
+  {
+    "query": "내 자기소개 15초 키네틱 타이포 영상 만들어줘. 이름은 김철수, 데이터팀이야",
+    "should_trigger": true
+  },
+  {
+    "query": "intro-kinetic 레시피로 이름이랑 구독자 수만 바꿔서 영상 하나 더 뽑아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "make my kinetic intro video again, same template, but with name=Jane Doe and three flash words",
+    "should_trigger": true
+  },
+  {
+    "query": "지난번 그 자기소개 모션그래픽 뼈대 그대로 쓰고 내용만 우리 팀장님 걸로 교체해줘",
+    "should_trigger": true
+  },
+  {
+    "query": "which hf-motion recipes exist and what parameters does intro-kinetic take?",
+    "should_trigger": true
+  },
+  {
+    "query": "render the self-intro motion graphic recipe at 116 bpm with tools=Notion Kit|Daily Log",
+    "should_trigger": true
+  },
+  {
+    "query": "/video:hf-motion",
+    "should_trigger": true,
+    "note": "no recipe given: the skill lists recipes and asks"
+  },
+  {
+    "query": "make a 6s pixel dissolve of our logo",
+    "should_trigger": false,
+    "note": "pixel-dissolve is a planned recipe, not implemented; a one-off belongs to hyperframes:motion-graphics. If it does trigger, the skill must answer not-implemented and stop, never fall back to intro-kinetic"
+  },
+  {
+    "query": "제품 런칭 영상 60초짜리 웹사이트 캡처해서 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "이 유튜브 인터뷰 영상에 자막 입혀줘",
+    "should_trigger": false
+  },
+  {
+    "query": "build me an html slide deck for tomorrow's team meeting",
+    "should_trigger": false
+  },
+  {
+    "query": "이 PR 내용을 설명하는 영상으로 만들어줘",
+    "should_trigger": false
+  },
+  {
+    "query": "지금 변경사항 커밋하고 PR 올려줘",
+    "should_trigger": false
+  },
+  {
+    "query": "rebase this branch onto main and fix the conflicts",
+    "should_trigger": false
+  },
+  {
+    "query": "가사에 맞춰서 비트 싱크된 뮤직비디오 만들어줘",
+    "should_trigger": false
+  }
+]

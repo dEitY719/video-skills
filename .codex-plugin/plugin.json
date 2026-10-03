@@ -1,0 +1,41 @@
+{
+  "name": "video",
+  "version": "0.1.0",
+  "description": "Recipe-driven HyperFrames motion graphics: same skeleton, swap the content.",
+  "author": {
+    "name": "dEitY719",
+    "url": "https://github.com/dEitY719"
+  },
+  "homepage": "https://github.com/dEitY719/video-skills",
+  "repository": "https://github.com/dEitY719/video-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "plugin",
+    "marketplace",
+    "video",
+    "hyperframes",
+    "motion-graphics"
+  ],
+  "skills": "./skills/",
+  "hooks": {},
+  "interface": {
+    "displayName": "Video",
+    "shortDescription": "Render a parameterized HyperFrames motion graphic from a named recipe",
+    "longDescription": "video owns repeatable, parameterized motion graphics. Its one skill, hf-motion, takes a recipe name and key=value parameters, scaffolds a HyperFrames project from that recipe's template, fills every on-screen string and tunable from the parameters (never inventing facts), regenerates a beat-locked music bed, then runs lint, check and snapshots through the official hyperframes plugin launcher and renders only after the parameters are confirmed. The one implemented recipe is intro-kinetic, a 15 s kinetic-typography self-introduction whose default parameters reproduce the original verified video frame for frame. Engine rules are not restated here: hf-motion requires the official hyperframes plugin and delegates to its hyperframes-core and motion-graphics skills.",
+    "developerName": "dEitY719",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Make my 15 second kinetic self-intro video with name=Hong Gildong and three flash words.",
+      "List the hf-motion recipes and what parameters intro-kinetic takes."
+    ],
+    "websiteURL": "https://github.com/dEitY719/video-skills",
+    "brandColor": "#E5322D",
+    "screenshots": []
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "video",
+  "version": "0.1.0",
+  "description": "Recipe-driven HyperFrames motion graphics: same skeleton, swap the content.",
+  "author": {
+    "name": "dEitY719",
+    "url": "https://github.com/dEitY719"
+  },
+  "homepage": "https://github.com/dEitY719/video-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "plugin",
+    "marketplace",
+    "video",
+    "hyperframes",
+    "motion-graphics"
+  ],
+  "skills": "./skills/",
+  "skillInstructions": "Kimi Code tool mapping for the video skills.\n\nThe authoritative mapping is not in this repo. It lives in the sibling repo `dEitY719/harness-skills` at `references/kimi-tools.md` (https://github.com/dEitY719/harness-skills/blob/main/references/kimi-tools.md) and is the single source of truth for every repo in the `dEitY719/*-skills` family; do not copy it here. Summary:\n\n- Read / Write / Edit / Bash / Grep / Glob keep their exposed Kimi names. Every scaffold, music, lint, check, snapshot and render step in `video:hf-motion` is a plain shell command - run it with `Bash` and surface its `[OK]` / `[FAIL]` lines verbatim.\n- \"Ask the user\" -> `AskUserQuestion`. `video:hf-motion` asks when no recipe was given and before the final render, to confirm the parameters.\n- `TodoWrite` -> Kimi Code's `TodoList` tool.\n- Kimi does not set `CLAUDE_PLUGIN_ROOT`. Export it to this plugin's install dir before running the skill's scripts, or the skill stops at its plugin-root guard.\n- Kimi has no `Skill` tool, so the engine rules the skill delegates to (`hyperframes:hyperframes-core`, `hyperframes:motion-graphics`) must be read as files from the official hyperframes plugin's `skills/` directory.\n\nSafety contracts. These are part of the skill, not advice:\n\n- Never render before the user has confirmed the parameters. All on-screen text comes from parameters; never invent names, numbers or claims.\n- The official hyperframes plugin is a prerequisite. Invoke its CLI only through `skills/hyperframes/scripts/plugin-cli.mjs`, never a bare `npx hyperframes`, and never run `skills update`.\n- A recipe that is listed as planned is not implemented. Say so; do not improvise it inside `intro-kinetic`.\n",
+  "interface": {
+    "displayName": "Video",
+    "shortDescription": "Render a parameterized HyperFrames motion graphic from a named recipe",
+    "longDescription": "video bundles hf-motion: one entry that scaffolds, fills, verifies and renders a HyperFrames motion graphic from a named recipe.",
+    "developerName": "dEitY719",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/dEitY719/video-skills"
+  }
+}
