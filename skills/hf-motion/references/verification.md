@@ -113,3 +113,12 @@ Manual equivalents, if the script cannot run:
 ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration -of compact renders/video.mp4
 ffmpeg -hide_banner -i renders/video.mp4 -af volumedetect -vn -f null - 2>&1 | grep max_volume
 ```
+
+## ui-morph
+
+1440x1440, 30 fps, music bed, 28 beats. Accepted lint warnings:
+`composition_file_too_large`, `nested_structure_needs_subcomposition`. The
+`content_overlap` findings on the clipped tab-label twin and the collapsing
+palette rows are marked `data-layout-allow-overlap` on purpose. Snapshot times
+and the loop check are in `recipes/ui-morph.md`; `verify-render args:` carries
+`--width 1440 --height 1440`.

@@ -16,7 +16,7 @@ skeleton, swap the content.
 
 Recipes live under `skills/hf-motion/templates/<recipe>/` with their contract in
 `skills/hf-motion/references/recipes/`. `intro-kinetic`, `pixel-dissolve`, `circle-pop`,
-`screen-dive`, `text-sandwich` and `letter-flythrough` are implemented; any planned one is listed there and marked as such. **Never add a recipe without
+`screen-dive`, `text-sandwich`, `letter-flythrough` and `ui-morph` are implemented; any planned one is listed there and marked as such. **Never add a recipe without
 a template, a `recipe.mjs`, a parity proof and a selfcheck case** — a name in a
 table is not a recipe.
 
@@ -35,7 +35,8 @@ committed here**: GSAP (GreenSock standard license) and the two SFX (Pixabay
 Content License) are both shipped by the official plugin, and
 `templates/<recipe>/recipe.mjs` names where. The one bundled binary is the
 font, `NanumSquare_acEB.ttf`, under SIL OFL 1.1 with `OFL.txt` beside it
-(Debian `fonts-nanum-extra` copyright, NAVER). Do not bundle anything whose
+(Debian `fonts-nanum-extra` copyright, NAVER). The `ui-morph` template also bundles `Geist-Variable.woff2` (npm `geist`, Vercel,
+SIL OFL 1.1, `OFL.txt` beside it). Do not bundle anything whose
 licence you have not checked the same way. A user's own image (the
 `text-sandwich` character) is never committed: the recipe's `userAssets`
 names the `CONFIG` key, and the scaffold copies the file in or refuses.

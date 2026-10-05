@@ -21,6 +21,7 @@ plugin is `video`, and its one skill, `hf-motion`, turns a named **recipe** plus
 | `screen-dive` | implemented | 6 s 1080x830 camera dive into a CSS-drawn laptop's screen until the screen text is full-frame; no music |
 | `text-sandwich` | implemented | 6 s 1080x830 text sandwich: your character image crosses between the letters of a big word, in front of some and behind others; no music |
 | `letter-flythrough` | implemented | 6 s 1080x830 camera fly-through into the hole of a big letter (outlines read from the bundled font) until the next scene fills the frame; no music |
+| `ui-morph` | implemented | 14 s seamless-loop UI motion, 1440x1440 @ 30 fps, 120 BPM: one shape morphs through 14 UI states with a cursor; synthesized music, Latin text |
 
 Parameters, limits and timelines: one file per recipe under
 [`skills/hf-motion/references/recipes/`](skills/hf-motion/references/recipes/).
