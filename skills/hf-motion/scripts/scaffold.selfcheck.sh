@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Self-check for scaffold.mjs + the intro-kinetic, pixel-dissolve, circle-pop and screen-dive recipes. Offline: a fake
+# Self-check for scaffold.mjs + the intro-kinetic, pixel-dissolve, circle-pop, screen-dive and text-sandwich recipes. Offline: a fake
 # hyperframes plugin supplies the copied assets, and --no-music skips numpy.
 #
 #   bash skills/hf-motion/scripts/scaffold.selfcheck.sh
@@ -82,8 +82,8 @@ node "$S" intro-kinetic "$TMP/x2" --no-music 'tools=a|b|c|d' >/dev/null 2>&1; ch
 node "$S" intro-kinetic "$TMP/x3" --no-music 'bpm=fast' >/dev/null 2>&1; chk "non-numeric bpm refused" "$?" 2
 node "$S" intro-kinetic "$TMP/x4" --no-music 'red=red' >/dev/null 2>&1; chk "non-hex colour refused" "$?" 2
 chk "refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'x*' | wc -l | tr -d ' ')" "0"
-node "$S" text-sandwich "$TMP/x5" >/dev/null 2>&1; chk "planned recipe refused" "$?" 2
-chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "circle-pop intro-kinetic pixel-dissolve screen-dive "
+node "$S" letter-flythrough "$TMP/x5" >/dev/null 2>&1; chk "planned recipe refused" "$?" 2
+chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "circle-pop intro-kinetic pixel-dissolve screen-dive text-sandwich "
 HF_PLUGIN_ROOT="$TMP/none" node "$S" intro-kinetic "$TMP/y" --no-music >/dev/null 2>&1
 chk "missing plugin stops (exit 3)" "$?" 3
 chk "missing plugin wrote nothing" "$([ -e "$TMP/y" ] && echo y || echo n)" "n"
@@ -189,4 +189,46 @@ chk "sd refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'v*' | wc -
 # no image asset: the laptop is drawn in CSS; the glass is exactly the canvas ratio at half size
 chk "sd no image in template" "$(find "$SD" -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.svg' -o -name '*.webp' \) | wc -l | tr -d ' ')" "0"
 chk "sd glass = half canvas" "$(sed -n '/#glass {/,/}/p' "$SD/index.html" | grep -Eo '(width|height): [0-9]+px' | tr '\n' ' ')" "width: 540px height: 415px "
+
+# 8. text-sandwich: the character image is the user's file, copied in, never bundled
+TS="$HERE/../templates/text-sandwich"
+mkdir -p "$TMP/img" && cd "$TMP/img" || exit 1
+# throwaway 1x1 transparent PNG, generated here, never committed
+printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==' | base64 -d > alex.png
+printf 'GIF89a' > other.gif
+out=$(node "$S" text-sandwich "$TMP/ts")
+chk "ts default exit (alex.png in cwd)" "$?" 0
+chk "ts verify-render args" "$(printf '%s\n' "$out" | sed -n 's/^verify-render args: //p')" "--duration 6 --width 1080 --height 830"
+chk "ts no music generated" "$([ -e "$TMP/ts/assets/music.wav" ] && echo y || echo n)" "n"
+chk "ts defaults" "$(cfg "$TMP/ts" '[c.word,c.characterImage,c.direction,c.passAt,c.passDur,c.paper,c.charcoal,c.red].join("/")')" \
+    "MOTION/alex.png/ltr/1.5/2.5/#f2eee6/#1e1e1e/#e5322d"
+chk "ts image copied byte-exact" "$(cmp -s alex.png "$TMP/ts/assets/character.png" && echo y || echo n)" "y"
+chk "ts total + canvas" "$(attr "$TMP/ts" stage data-duration) $(attr "$TMP/ts" stage data-width)x$(attr "$TMP/ts" stage data-height)" "6 1080x830"
+chk "ts character window = pass" "$(attr "$TMP/ts" character data-start)/$(attr "$TMP/ts" character data-duration)" "1.5/2.5"
+chk "ts both slices run 6 s" "$(attr "$TMP/ts" back data-duration)/$(attr "$TMP/ts" front data-duration)" "6/6"
+chk "ts gsap copied, font bundled" "$(cat "$TMP/ts/assets/vendor/gsap.min.js")$([ -s "$TMP/ts/assets/fonts/NanumSquare_acEB.ttf" ] && echo y)" "/* gsap fixture */y"
+node "$S" text-sandwich "$TMP/ts2" 'word=샌드위치 TEXT' characterImage="$TMP/img/alex.png" direction=rtl passAt=1 passDur=3.5 'red=#c0392b' >/dev/null
+chk "ts alt exit (absolute path)" "$?" 0
+chk "ts alt window" "$(attr "$TMP/ts2" character data-start)/$(attr "$TMP/ts2" character data-duration)" "1/3.5"
+chk "ts alt literal Korean" "$(cfg "$TMP/ts2" c.word)" "샌드위치 TEXT"
+node "$S" text-sandwich "$TMP/ts2" --update characterImage=other.gif >/dev/null
+chk "ts update re-copies a passed image" "$(head -c 6 "$TMP/ts2/assets/character.png")" "GIF89a"
+node "$S" text-sandwich "$TMP/ts2" --update passAt=2 >/dev/null
+chk "ts update keeps the copied image" "$(head -c 6 "$TMP/ts2/assets/character.png")/$(attr "$TMP/ts2" character data-start)" "GIF89a/2"
+# missing / unreadable / wrong-kind asset: exit 2, a message naming the key, nothing written
+err=$(node "$S" text-sandwich "$TMP/u1" characterImage=nope.png 2>&1 >/dev/null); rc=$?
+chk "ts missing image refused" "$rc" 2
+chk "ts missing image message" "$(printf '%s' "$err" | grep -c 'characterImage: cannot read')" "1"
+(cd "$TMP" && node "$S" text-sandwich "$TMP/u2" >/dev/null 2>&1); chk "ts default without alex.png refused" "$?" 2
+mkdir "$TMP/img/dir.png"; node "$S" text-sandwich "$TMP/u3" characterImage=dir.png >/dev/null 2>&1; chk "ts directory refused" "$?" 2
+cp alex.png locked.png && chmod 000 locked.png
+if [ -r locked.png ]; then echo "skip  ts unreadable image (running as root)"; else
+    node "$S" text-sandwich "$TMP/u4" characterImage=locked.png >/dev/null 2>&1; chk "ts unreadable image refused" "$?" 2; fi
+node "$S" text-sandwich "$TMP/u5" characterImage=x.svg >/dev/null 2>&1; chk "ts svg refused" "$?" 2
+node "$S" text-sandwich "$TMP/u6" direction=up >/dev/null 2>&1; chk "ts unknown direction refused" "$?" 2
+node "$S" text-sandwich "$TMP/u7" passAt=3 passDur=3 >/dev/null 2>&1; chk "ts no hold refused" "$?" 2
+node "$S" text-sandwich "$TMP/u8" 'word=ABCDEFGHIJKLM' >/dev/null 2>&1; chk "ts long word refused" "$?" 2
+chk "ts refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'u*' | wc -l | tr -d ' ')" "0"
+chk "ts no image in template" "$(find "$TS" -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.gif' -o -name '*.webp' \) | wc -l | tr -d ' ')" "0"
+cd "$HERE" || exit 1
 exit "$FAIL"

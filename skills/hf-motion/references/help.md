@@ -8,7 +8,7 @@ the parameters supply every word, number and colour.
 
 | # | Name | Default | Description |
 |---|------|---------|-------------|
-| 1 | `<recipe>` or `-h`/`--help`/`help` | — | Recipe name. Omitted: list recipes and ask. Implemented: `intro-kinetic` (15 s kinetic-typography self-intro), `pixel-dissolve` (6 s word swap through a seeded pixel dissolve), `circle-pop` (6 s scene change through a popping circle that becomes scene B), `screen-dive` (6 s camera dive into a drawn laptop's screen). Planned, not implemented: see `references/recipes/README.md` |
+| 1 | `<recipe>` or `-h`/`--help`/`help` | — | Recipe name. Omitted: list recipes and ask. Implemented: `intro-kinetic` (15 s kinetic-typography self-intro), `pixel-dissolve` (6 s word swap through a seeded pixel dissolve), `circle-pop` (6 s scene change through a popping circle that becomes scene B), `screen-dive` (6 s camera dive into a drawn laptop's screen), `text-sandwich` (6 s pass of the user's character image between the letters of a word). Planned, not implemented: see `references/recipes/README.md` |
 | 2.. | `key=value` | recipe defaults | Overrides one top-level key of the recipe's `CONFIG` block. Numbers parse as numbers; lists split on `\|` (commas are legal inside an item); `[word]` inside a label or finale line marks the accent colour. Unknown keys are rejected. Per-recipe keys and limits: `references/recipes/<recipe>.md` |
 | - | `--out <dir>` | `./<recipe>` | Project directory to create. Must not exist or be empty |
 
@@ -32,6 +32,9 @@ anyone else every fact must come from them.
   6 s change; the circle pops from the lower left and becomes scene B.
 - `/video:hf-motion screen-dive 'screenText=새로운 화면' diveAt=1.5 diveDur=3` —
   6 s dive into the laptop screen; the text ends full-frame with no bezel.
+- `/video:hf-motion text-sandwich word=MOTION characterImage=./alex.png direction=rtl` —
+  6 s sandwich with your own image (copied into the project, never bundled); a
+  missing image stops the scaffold before anything is written.
 - `/video:hf-motion -h` — print this help.
 
 ## The scripts it runs
@@ -39,7 +42,7 @@ anyone else every fact must come from them.
 | Script | Does |
 |--------|------|
 | `scripts/find-hf-plugin.sh` | Prints the official hyperframes plugin root (the dir holding `skills/hyperframes/scripts/plugin-cli.mjs`); exit 1 with install instructions when absent |
-| `scripts/scaffold.mjs <recipe> <dir> [k=v ...] [--update] [--no-music]` | Copies the template, rewrites `CONFIG`, writes the static timing attributes, copies GSAP + SFX from the hyperframes plugin, writes `package.json` / `meta.json`, generates the music bed (recipes that have one). Prints a `verify-render args:` line for Step 6. `--list` prints implemented recipes |
+| `scripts/scaffold.mjs <recipe> <dir> [k=v ...] [--update] [--no-music]` | Copies the template, rewrites `CONFIG`, writes the static timing attributes, copies GSAP + SFX from the hyperframes plugin, writes `package.json` / `meta.json`, copies a recipe's user asset (refusing, with nothing written, when it is unreadable), generates the music bed (recipes that have one). Prints a `verify-render args:` line for Step 6. `--list` prints implemented recipes |
 | `scripts/verify-render.py <mp4> --duration S [--bpm N] [--width W --height H]` | Post-render gate: h264 WxH (default 1920x1080) @ 30 fps, duration; with `--bpm` also aac, audio peak, kick grid |
 
 ## Environment

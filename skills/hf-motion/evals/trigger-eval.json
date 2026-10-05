@@ -72,6 +72,16 @@
     "should_trigger": true
   },
   {
+    "query": "MOTION 글자 사이로 내 캐릭터 이미지가 지나가는 텍스트 샌드위치 영상 만들어줘",
+    "should_trigger": true,
+    "note": "text-sandwich is implemented: the user's character image passes in front of some letters and behind others"
+  },
+  {
+    "query": "/video:hf-motion text-sandwich word=MOTION characterImage=./alex.png direction=rtl",
+    "should_trigger": true,
+    "note": "slash-literal: update if the skill is renamed"
+  },
+  {
     "query": "camera flies through the letters of our brand name into the next scene",
     "should_trigger": false,
     "note": "letter-flythrough is a planned recipe, not implemented; a one-off belongs to hyperframes:motion-graphics. If it does trigger, the skill must answer not-implemented and stop, never fall back to an implemented recipe"
