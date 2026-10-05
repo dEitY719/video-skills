@@ -9,6 +9,8 @@
 // standard license), never redistributed from this repo. The fonts (Archivo,
 // Geist; SIL OFL 1.1, licence beside each) and the placeholder photos (drawn
 // for this repo by scripts/make_photos.py) are part of the template.
+// Geist comes from templates/_shared (also used by ui-morph).
+export const sharedAssets = ["assets/fonts/geist/Geist-Variable.woff2", "assets/fonts/geist/OFL.txt"];
 export const pluginAssets = {
   "assets/vendor/gsap.min.js": { glob: "skills/*/assets/vendor/gsap.min.js" },
 };

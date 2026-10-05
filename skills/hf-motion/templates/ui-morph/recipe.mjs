@@ -12,8 +12,9 @@ export const pluginAssets = {
   "assets/vendor/gsap.min.js": { glob: "skills/*/assets/vendor/gsap.min.js" },
 };
 
-// The font (Geist, SIL OFL 1.1, OFL.txt beside it) lives in this template's own
-// assets/fonts/, so it is copied with the template; no sharedAssets.
+// Geist (SIL OFL 1.1, OFL.txt beside it) is shared with launch-film: it lives in
+// templates/_shared and the scaffold copies it.
+export const sharedAssets = ["assets/fonts/geist/Geist-Variable.woff2", "assets/fonts/geist/OFL.txt"];
 
 export const canvas = { width: 1440, height: 1440 };
 export const BEATS = 28;

@@ -167,6 +167,13 @@ for (const [src, dest] of fileCopies) {
   mkdirSync(dirname(dest), { recursive: true });
   cpSync(src, dest);
 }
+// sharedAssets: files several recipes use (the Geist font), kept once in templates/_shared
+for (const dest of recipe.sharedAssets ?? []) {
+  if (existsSync(join(out, dest))) continue;
+  mkdirSync(dirname(join(out, dest)), { recursive: true });
+  cpSync(join(templates, "_shared", dest), join(out, dest));
+}
+
 for (const [src, dest] of userCopies) {
   mkdirSync(dirname(join(out, dest)), { recursive: true });
   cpSync(src, join(out, dest));
