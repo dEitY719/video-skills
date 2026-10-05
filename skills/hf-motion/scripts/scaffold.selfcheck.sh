@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Self-check for scaffold.mjs + the intro-kinetic recipe. Offline: a fake
+# Self-check for scaffold.mjs + the intro-kinetic and pixel-dissolve recipes. Offline: a fake
 # hyperframes plugin supplies the copied assets, and --no-music skips numpy.
 #
 #   bash skills/hf-motion/scripts/scaffold.selfcheck.sh
@@ -82,9 +82,47 @@ node "$S" intro-kinetic "$TMP/x2" --no-music 'tools=a|b|c|d' >/dev/null 2>&1; ch
 node "$S" intro-kinetic "$TMP/x3" --no-music 'bpm=fast' >/dev/null 2>&1; chk "non-numeric bpm refused" "$?" 2
 node "$S" intro-kinetic "$TMP/x4" --no-music 'red=red' >/dev/null 2>&1; chk "non-hex colour refused" "$?" 2
 chk "refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'x*' | wc -l | tr -d ' ')" "0"
-node "$S" pixel-dissolve "$TMP/x5" >/dev/null 2>&1; chk "planned recipe refused" "$?" 2
-chk "--list = implemented only" "$(node "$S" --list)" "intro-kinetic"
+node "$S" circle-pop "$TMP/x5" >/dev/null 2>&1; chk "planned recipe refused" "$?" 2
+chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "intro-kinetic pixel-dissolve "
 HF_PLUGIN_ROOT="$TMP/none" node "$S" intro-kinetic "$TMP/y" --no-music >/dev/null 2>&1
 chk "missing plugin stops (exit 3)" "$?" 3
 chk "missing plugin wrote nothing" "$([ -e "$TMP/y" ] && echo y || echo n)" "n"
+
+# 5. pixel-dissolve: no music bed, fixed 6 s, timing from transitionAt/Dur
+PD="$HERE/../templates/pixel-dissolve"
+out=$(node "$S" pixel-dissolve "$TMP/pd")
+chk "pd default exit" "$?" 0
+chk "pd no-music line" "$(printf '%s\n' "$out" | sed -n 's/.*(\(.*\))$/\1/p' | head -1)" "6s, no music"
+chk "pd verify-render args" "$(printf '%s\n' "$out" | sed -n 's/^verify-render args: //p')" "--duration 6 --width 1080 --height 830"
+chk "pd no music generated" "$([ -e "$TMP/pd/assets/music.wav" ] && echo y || echo n)" "n"
+chk "pd textA" "$(cfg "$TMP/pd" c.textA)" "어제의 나"
+chk "pd defaults" "$(cfg "$TMP/pd" '[c.textB,c.transitionAt,c.transitionDur,c.pixelSize,c.bgA,c.bgB,c.paper,c.charcoal,c.red].join("/")')" \
+    "오늘의 나/3/1/40/charcoal/paper/#f2eee6/#1e1e1e/#e5322d"
+chk "pd total" "$(attr "$TMP/pd" stage data-duration)" "6"
+chk "pd canvas" "$(attr "$TMP/pd" stage data-width)x$(attr "$TMP/pd" stage data-height)" "1080x830"
+chk "pd sA ends with the dissolve" "$(attr "$TMP/pd" sA data-duration)" "4"
+chk "pd sB from transitionAt" "$(attr "$TMP/pd" sB data-start)/$(attr "$TMP/pd" sB data-duration)" "3/3"
+chk "pd fx = transitionDur" "$(attr "$TMP/pd" fx data-duration)" "1"
+chk "pd gsap copied, font bundled" "$(cat "$TMP/pd/assets/vendor/gsap.min.js")$([ -s "$TMP/pd/assets/fonts/NanumSquare_acEB.ttf" ] && echo y)" "/* gsap fixture */y"
+node "$S" pixel-dissolve "$TMP/pd2" 'textA=작년의 평범한 직장인 김철수' transitionAt=2.5 transitionDur=1.5 pixelSize=24 bgA=red >/dev/null
+chk "pd alt exit" "$?" 0
+chk "pd alt timing" "$(attr "$TMP/pd2" sA data-duration)/$(attr "$TMP/pd2" sB data-start)/$(attr "$TMP/pd2" sB data-duration)/$(attr "$TMP/pd2" fx data-duration)" "4/2.5/3.5/1.5"
+chk "pd alt literal Korean" "$(cfg "$TMP/pd2" c.textA)" "작년의 평범한 직장인 김철수"
+node "$S" pixel-dissolve "$TMP/z1" transitionAt=4.5 transitionDur=1.5 >/dev/null 2>&1; chk "pd no hold refused" "$?" 2
+node "$S" pixel-dissolve "$TMP/z2" pixelSize=7 >/dev/null 2>&1; chk "pd pixelSize floor refused" "$?" 2
+node "$S" pixel-dissolve "$TMP/z3" bgB=blue >/dev/null 2>&1; chk "pd unknown bg refused" "$?" 2
+chk "pd refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'z*' | wc -l | tr -d ' ')" "0"
+# determinism: seeded order, no Math.random, template copy == recipe.mjs reference
+chk "pd no Math.random" "$(grep -c 'Math\.random' "$PD/index.html" "$PD/recipe.mjs" | cut -d: -f2 | tr '\n' ' ')" "0 0 "
+chk "pd cell order seeded + template matches recipe.mjs" "$(node --input-type=module -e '
+  import { readFileSync } from "node:fs";
+  const { cellOrder, grid } = await import(process.argv[1] + "/recipe.mjs");
+  const h = readFileSync(process.argv[1] + "/index.html", "utf8");
+  const tplOrder = eval("(" + h.slice(h.indexOf("const cellOrder = ") + 18, h.indexOf("const P = C.pixelSize")).trim().replace(/;$/, "") + ")");
+  const { cols, rows } = grid({ pixelSize: 40 }), n = cols * rows;
+  const a = cellOrder(n), b = cellOrder(n), t = tplOrder(n, 719);
+  const perm = [...a].sort((x, y) => x - y).every((v, i) => v === i);
+  const shuffled = a.some((v, i) => v !== i);
+  console.log([n, perm, shuffled, a.join() === b.join(), a.join() === t.join()].join("/"));
+' "$PD")" "567/true/true/true/true"
 exit "$FAIL"

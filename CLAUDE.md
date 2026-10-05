@@ -12,11 +12,11 @@ skeleton, swap the content.
 
 | Skill | Starts from | Role |
 |-------|-------------|------|
-| `hf-motion` | A recipe name + `key=value` params | Scaffold the recipe's template, fill its one `CONFIG` block, regenerate the beat-locked music bed, then lint → check → snapshot → render → verify through the official hyperframes plugin. |
+| `hf-motion` | A recipe name + `key=value` params | Scaffold the recipe's template, fill its one `CONFIG` block, regenerate the beat-locked music bed (recipes that have one), then lint → check → snapshot → render → verify through the official hyperframes plugin. |
 
 Recipes live under `skills/hf-motion/templates/<recipe>/` with their contract in
-`skills/hf-motion/references/recipes/`. Only `intro-kinetic` is implemented; the
-planned ones are listed there and marked as such. **Never add a recipe without
+`skills/hf-motion/references/recipes/`. `intro-kinetic` and `pixel-dissolve` are
+implemented; the planned ones are listed there and marked as such. **Never add a recipe without
 a template, a `recipe.mjs`, a parity proof and a selfcheck case** — a name in a
 table is not a recipe.
 
