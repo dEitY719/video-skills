@@ -129,10 +129,10 @@ if (recipe.musicArgs && !flags.has("--no-music")) {
   execFileSync("python3", recipe.musicArgs(cfg), { cwd: out, stdio: "inherit" });
 }
 
-const music = recipe.musicArgs ? ` @ ${cfg.bpm} BPM` : ", no music";
+const bpm = recipe.musicArgs ? cfg.bpm : null;
 const size = recipe.canvas ? ` --width ${recipe.canvas.width} --height ${recipe.canvas.height}` : "";
-console.log(`[OK] ${name} scaffolded at ${out} (${total}s${music})`);
-console.log(`verify-render args: --duration ${total}${recipe.musicArgs ? ` --bpm ${cfg.bpm}` : ""}${size}`);
+console.log(`[OK] ${name} scaffolded at ${out} (${total}s${bpm == null ? ", no music" : ` @ ${bpm} BPM`})`);
+console.log(`verify-render args: --duration ${total}${bpm == null ? "" : ` --bpm ${bpm}`}${size}`);
 console.log(`Next (PLUGIN=$(bash ${join(here, "find-hf-plugin.sh")})):`);
 for (const c of ["lint .", "check .", "snapshot . --at <times>", "render . -q high -o ./renders/video.mp4"]) {
   console.log(`  (cd ${out} && node "$PLUGIN/skills/hyperframes/scripts/plugin-cli.mjs" ${c})`);

@@ -45,11 +45,11 @@ HF snapshot . --at <times> --no-end --describe false
 ```
 
 `intro-kinetic` at 120 BPM: `0.9,3.3,5.7,8.3,10.2,12.3,14.0` (one per scene,
-inside its hold). `pixel-dissolve`: `1.0`, `T`, `T+0.3D`, `T+0.5D`, `T+0.8D`,
-`T+D`, `5.9` (`T = transitionAt`, `D = transitionDur`; default
-`1,3,3.3,3.5,3.8,4,5.9`) — `T` must still be pure A, `T+D` pure B with no
-accent cell left. For another tempo scale by `120 / bpm` and shift scenes 4-6
-by the tool/flash count change. Read every PNG in `snapshots/` and check:
+inside its hold). For another tempo scale by `120 / bpm` and shift scenes 4-6
+by the tool/flash count change. `pixel-dissolve`: `1.0`, `T`, `T+0.3D`,
+`T+0.5D`, `T+0.8D`, `T+D`, `5.9` (`T = transitionAt`, `D = transitionDur`;
+default `1,3,3.3,3.5,3.8,4,5.9`) — `T` must still be pure A, `T+D` pure B with
+no accent cell left. Read every PNG in `snapshots/` and check:
 
 - every string matches the confirmed parameters exactly;
 - no tofu (empty boxes) — the bundled NanumSquare ac ExtraBold covers Hangul
