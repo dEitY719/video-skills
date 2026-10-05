@@ -83,7 +83,7 @@ node "$S" intro-kinetic "$TMP/x3" --no-music 'bpm=fast' >/dev/null 2>&1; chk "no
 node "$S" intro-kinetic "$TMP/x4" --no-music 'red=red' >/dev/null 2>&1; chk "non-hex colour refused" "$?" 2
 chk "refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'x*' | wc -l | tr -d ' ')" "0"
 node "$S" no-such-recipe "$TMP/x5" >/dev/null 2>&1; chk "unknown recipe refused (no planned recipe left)" "$?" 2
-chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "circle-pop intro-kinetic letter-flythrough pixel-dissolve screen-dive text-sandwich "
+chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "circle-pop intro-kinetic letter-flythrough pixel-dissolve screen-dive text-sandwich ui-morph "
 HF_PLUGIN_ROOT="$TMP/none" node "$S" intro-kinetic "$TMP/y" --no-music >/dev/null 2>&1
 chk "missing plugin stops (exit 3)" "$?" 3
 chk "missing plugin wrote nothing" "$([ -e "$TMP/y" ] && echo y || echo n)" "n"

@@ -121,6 +121,11 @@
     "should_trigger": false
   },
   {
+    "query": "버튼이 로더, 음악 플레이어, 슬라이더, 토글로 계속 변하는 UI 모션 루프 영상 만들어줘",
+    "should_trigger": true,
+    "note": "ui-morph is implemented"
+  },
+  {
     "query": "가사에 맞춰서 비트 싱크된 뮤직비디오 만들어줘",
     "should_trigger": false
   }

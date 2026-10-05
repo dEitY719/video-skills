@@ -16,6 +16,7 @@ templates directory, so this table and that listing must agree.
 | `text-sandwich` | **implemented** | 6 s 1080x830 text sandwich: the user's character image (never bundled; copied in by the scaffold) crosses between the letters of a big word, in front of some and behind others. No music. [`text-sandwich.md`](text-sandwich.md) |
 | `screen-dive` | **implemented** | 6 s 1080x830 camera dive: a CSS-drawn laptop, then one continuous scale+translate into its screen until the screen text is full-frame and the bezel is gone. No music. [`screen-dive.md`](screen-dive.md) |
 | `letter-flythrough` | **implemented** | 6 s 1080x830 fly-through: big letters as outlines from the bundled font, then one continuous zoom into a glyph's counter (the hole of "A") until the next scene inside it fills the frame. No music. [`letter-flythrough.md`](letter-flythrough.md) |
+| `ui-morph` | **implemented** | 14 s seamless loop, 1440x1440, 120 BPM: one shape morphs through button, loader, island, music player, slider, toggle, tabs, chart and Cmd K palette to a toast and back; Latin text only, with music. [`ui-morph.md`](ui-morph.md) |
 
 Planned recipes have no template, no parameters and no code. `hf-motion`
 answers a request for one with "not implemented" and stops; it does not
