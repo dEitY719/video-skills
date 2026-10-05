@@ -1,6 +1,6 @@
 {
   "name": "video",
   "description": "Recipe-driven HyperFrames motion graphics: same skeleton, swap the content",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "contextFileName": "GEMINI.md"
 }
