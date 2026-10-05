@@ -11,7 +11,7 @@ Every key is a top-level `CONFIG` key; pass it as `key=value`.
 
 | Key | Type | Default | Limit / note |
 |-----|------|---------|--------------|
-| `title` | text | `윤병우 자기소개` | document title only (not on screen) |
+| `title` | text | `윤병우 자기소개` | document title only (not on screen); when `name=` is passed without `title=`, it becomes `<name> 자기소개` |
 | `name` | text | `윤병우` | scene 1 slam, 300 px; shrinks to fit 1600 px |
 | `team` | text | `AX/PI팀` | scene 1 subtitle |
 | `employer` | text | `삼성 시니어 엔지니어` | scene 2 title line |
@@ -27,7 +27,7 @@ Every key is a top-level `CONFIG` key; pass it as `key=value`.
 | `finale` | list | `실리콘밸리 개발자가 알려주는\|[시간, 돈, 감정]에서\|[자유]로워지는 법` | **1..4** lines, one every two beats; first line is the small lead when there are 2+; `[...]` = accent |
 | `paper` | `#rrggbb` | `#f2eee6` | light |
 | `charcoal` | `#rrggbb` | `#1e1e1e` | dark |
-| `red` | `#rrggbb` | `#e5322d` | accent; must keep 3:1 contrast on both others |
+| `red` | `#rrggbb` | `#e5322d` | accent; must keep 3:1 contrast on both others (the scaffold refuses otherwise) |
 | `bpm` | number | `120` | **90..150** |
 
 ## Timeline (beats; `B = 60 / bpm`, T/F/L = item counts)
@@ -73,6 +73,12 @@ a noise riser across s5, chord on the finale impact, 0.5 s fade.
   recipe is a single file on purpose so one `CONFIG` drives everything.
 - **Flash panels stack.** Each word's panel hides the previous one on its beat;
   without that, `check` reports `content_overlap` and a 1:1 contrast failure.
+- **Contrast is not audited under a moving cover.** Each scene-exit panel
+  (bar, lift, iris, block, sweep, slab) sets `data-layout-ignore` on the
+  scene's text while it is mid-move: check's contrast pass takes the median
+  pixel of the text box, so text half under the paper iris read as paper on
+  paper (`#s2-title` / `#s2-unit 1:1` at `bpm=132`, t=3.662s). Holds are
+  audited as usual.
 - **Mask reveal infos.** `container_overflow` on `.mask` children during the
   slide-in is the effect, not a bug.
 - **Width fit is estimated**, not measured (per-glyph em widths), and only

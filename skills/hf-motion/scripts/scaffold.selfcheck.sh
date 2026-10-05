@@ -51,15 +51,16 @@ chk "package.json pins plugin version" "$(node -p 'require(process.argv[1]).scri
 # 2. alternate: different text, counts, palette and tempo
 node "$S" intro-kinetic "$TMP/alt" --no-music 'name=홍길동' 'team=가나다팀' 'subsTarget=123000' \
     'tools=Notion Kit|Daily Log' 'flash=습관|기록|성장' 'finale=평범한 직장인이 알려주는|[돈과 시간]을 버는|[작은 습관] 하나' \
-    'red=#ff5a1f' 'bpm=116' >/dev/null
+    'red=#c0392b' 'bpm=116' >/dev/null
 chk "alt exit" "$?" 0
 chk "alt name" "$(cfg "$TMP/alt" c.name)" "홍길동"
 chk "alt team" "$(cfg "$TMP/alt" c.team)" "가나다팀"
+chk "alt title follows name" "$(cfg "$TMP/alt" c.title)" "홍길동 자기소개"
 chk "alt subsTarget is a number" "$(cfg "$TMP/alt" 'typeof c.subsTarget + c.subsTarget')" "number123000"
 chk "alt tools list" "$(cfg "$TMP/alt" 'c.tools.join("/")')" "Notion Kit/Daily Log"
 chk "alt flash count" "$(cfg "$TMP/alt" c.flash.length)" "3"
 chk "alt finale comma kept inside item" "$(cfg "$TMP/alt" 'c.finale[1]')" "[돈과 시간]을 버는"
-chk "alt palette" "$(cfg "$TMP/alt" c.red)" "#ff5a1f"
+chk "alt palette" "$(cfg "$TMP/alt" c.red)" "#c0392b"
 chk "alt untouched key keeps default" "$(cfg "$TMP/alt" c.employer)" "삼성 시니어 엔지니어"
 chk "alt total = 29 beats @116" "$(attr "$TMP/alt" stage data-duration)" "15"
 chk "alt s5 = 3 beats" "$(attr "$TMP/alt" s5 data-duration)" "1.551724"
@@ -81,7 +82,9 @@ node "$S" intro-kinetic "$TMP/x1" --no-music 'nmae=x' >/dev/null 2>&1; chk "unkn
 node "$S" intro-kinetic "$TMP/x2" --no-music 'tools=a|b|c|d' >/dev/null 2>&1; chk "4 tools refused" "$?" 2
 node "$S" intro-kinetic "$TMP/x3" --no-music 'bpm=fast' >/dev/null 2>&1; chk "non-numeric bpm refused" "$?" 2
 node "$S" intro-kinetic "$TMP/x4" --no-music 'red=red' >/dev/null 2>&1; chk "non-hex colour refused" "$?" 2
+node "$S" intro-kinetic "$TMP/x5" --no-music 'red=#fca311' 'paper=#fafafa' >/dev/null 2>&1; chk "low-contrast red refused" "$?" 2
 chk "refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'x*' | wc -l | tr -d ' ')" "0"
+node "$S" intro-kinetic "$TMP/ok6" --no-music 'name=홍길동' 'title=내 소개' >/dev/null 2>&1; chk "explicit title kept" "$(cfg "$TMP/ok6" c.title)" "내 소개"
 node "$S" no-such-recipe "$TMP/x5" >/dev/null 2>&1; chk "unknown recipe refused (no planned recipe left)" "$?" 2
 chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "circle-pop intro-kinetic launch-film letter-flythrough pixel-dissolve screen-dive text-sandwich ui-morph "
 HF_PLUGIN_ROOT="$TMP/none" node "$S" intro-kinetic "$TMP/y" --no-music >/dev/null 2>&1

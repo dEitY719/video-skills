@@ -5,6 +5,8 @@
 // timing attribute. index.html re-derives the same lengths only to refuse to
 // build when the attributes and CONFIG disagree.
 
+import { contrast } from "../_shared/contrast.mjs";
+
 // Files taken from the official hyperframes plugin at scaffold time, never
 // redistributed from this repo: GSAP ships under its own standard license and
 // the SFX under the Pixabay Content License (both bundled by that plugin).
@@ -38,10 +40,22 @@ export function validate(c) {
   if (!Number.isInteger(c.subsTarget) || c.subsTarget < 0) err.push(`subsTarget must be a non-negative integer`);
   if (!["ko", "comma"].includes(c.subsFormat)) err.push(`subsFormat must be ko or comma`);
   if (c.subsFormat === "ko" && c.subsTarget < 1000) err.push(`subsFormat=ko counts in thousands; use subsTarget >= 1000 or subsFormat=comma`);
+  let hexOk = true;
   for (const k of ["paper", "charcoal", "red"]) {
-    if (!HEX.test(c[k] ?? "")) err.push(`${k} must be a #rrggbb colour`);
+    if (!HEX.test(c[k] ?? "")) { err.push(`${k} must be a #rrggbb colour`); hexOk = false; }
+  }
+  if (hexOk) {
+    for (const k of ["paper", "charcoal"]) {
+      const r = contrast(c.red, c[k]);
+      if (r < 3) err.push(`red must keep 3:1 contrast on ${k}, got ${r.toFixed(2)}:1`);
+    }
   }
   return err;
+}
+
+// The default title carries the original author's name; follow `name` unless title= was passed.
+export function derive(c, given) {
+  if (given.has("name") && !given.has("title") && typeof c.name === "string") c.title = `${c.name.trim()} 자기소개`;
 }
 
 const r = (x) => +x.toFixed(6);
