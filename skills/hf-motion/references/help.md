@@ -8,7 +8,7 @@ the parameters supply every word, number and colour.
 
 | # | Name | Default | Description |
 |---|------|---------|-------------|
-| 1 | `<recipe>` or `-h`/`--help`/`help` | — | Recipe name. Omitted: list recipes and ask. Implemented: `intro-kinetic`. Planned (not implemented): see `references/recipes/README.md` |
+| 1 | `<recipe>` or `-h`/`--help`/`help` | — | Recipe name. Omitted: list recipes and ask. Implemented: `intro-kinetic` only (15 s kinetic-typography self-intro). Planned, not implemented (`pixel-dissolve` and others, issues #1-#5): see `references/recipes/README.md` |
 | 2.. | `key=value` | recipe defaults | Overrides one top-level key of the recipe's `CONFIG` block. Numbers parse as numbers; lists split on `\|` (commas are legal inside an item); `[word]` inside a label or finale line marks the accent colour. Unknown keys are rejected. Per-recipe keys and limits: `references/recipes/<recipe>.md` |
 | - | `--out <dir>` | `./<recipe>` | Project directory to create. Must not exist or be empty |
 
