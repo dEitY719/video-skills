@@ -145,8 +145,9 @@
       root.setProperty("--red", C.red);
 
       // ---- guard: the static timing attributes must match CONFIG
+      const pass = win("character");
       const near = (a, b) => Math.abs(a - b) <= 1e-3;
-      if (!near(win("character").start, C.passAt) || !near(win("character").dur, C.passDur)) {
+      if (!near(pass.start, C.passAt) || !near(pass.dur, C.passDur)) {
         throw new Error("text-sandwich: timing attributes disagree with CONFIG; re-run scaffold --update");
       }
 
@@ -185,7 +186,6 @@
       // ---- the pass: the image box starts and ends fully off-canvas
       const boxW = $("char").offsetWidth;
       const [x0, x1] = C.direction === "ltr" ? [-boxW, W] : [W, -boxW];
-      const pass = win("character");
 
       // ---- timeline: positions = CONFIG + scene windows (from the DOM)
       const tl = gsap.timeline({ paused: true });
@@ -196,7 +196,7 @@
       tl.from("#bar", { scaleX: 0, duration: 0.6, ease: "power3.out" }, 0.3);
       tl.fromTo("#char", { x: x0 }, { x: x1, duration: pass.dur, ease: "none", immediateRender: false }, pass.start);
       // hold: a slow push on both slices from where the entrance left them
-      tl.fromTo([".word"], { scale: 1 }, { scale: 1.03, duration: win("stage").end - pass.end, ease: "none", immediateRender: false }, pass.end);
+      tl.fromTo(".word", { scale: 1 }, { scale: 1.03, duration: win("stage").end - pass.end, ease: "none", immediateRender: false }, pass.end);
       tl.set({}, {}, win("stage").end);
 
       window.__timelines["main"] = tl;
