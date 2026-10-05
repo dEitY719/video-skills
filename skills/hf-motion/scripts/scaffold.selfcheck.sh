@@ -82,7 +82,7 @@ node "$S" intro-kinetic "$TMP/x2" --no-music 'tools=a|b|c|d' >/dev/null 2>&1; ch
 node "$S" intro-kinetic "$TMP/x3" --no-music 'bpm=fast' >/dev/null 2>&1; chk "non-numeric bpm refused" "$?" 2
 node "$S" intro-kinetic "$TMP/x4" --no-music 'red=red' >/dev/null 2>&1; chk "non-hex colour refused" "$?" 2
 chk "refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'x*' | wc -l | tr -d ' ')" "0"
-node "$S" no-such-recipe "$TMP/x5" >/dev/null 2>&1; chk "unknown/planned recipe refused" "$?" 2
+node "$S" text-sandwich "$TMP/x5" >/dev/null 2>&1; chk "planned recipe refused" "$?" 2
 chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "circle-pop intro-kinetic pixel-dissolve "
 HF_PLUGIN_ROOT="$TMP/none" node "$S" intro-kinetic "$TMP/y" --no-music >/dev/null 2>&1
 chk "missing plugin stops (exit 3)" "$?" 3
@@ -156,8 +156,7 @@ chk "cp radius clamped + template matches recipe.mjs" "$(node --input-type=modul
   import { readFileSync } from "node:fs";
   const R = await import(process.argv[1] + "/recipe.mjs");
   const h = readFileSync(process.argv[1] + "/index.html", "utf8");
-  const [, pop, fill] = h.match(/const POP = ([\d.]+), FILL = ([\d.]+);/).map(Number);
-  const POP = pop, FILL = fill;
+  const [, POP, FILL] = h.match(/const POP = ([\d.]+), FILL = ([\d.]+);/).map(Number);
   const radius = eval("(" + h.slice(h.indexOf("const radius = ") + 15, h.indexOf("const draw = ")).trim().replace(/;$/, "") + ")");
   const R0 = 200, RC = 1000, OS = 1.15, ts = Array.from({ length: 901 }, (_, i) => i / 1000);
   const rs = ts.map((t) => radius(t, R0, RC, OS));
