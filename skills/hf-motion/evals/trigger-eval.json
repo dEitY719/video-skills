@@ -34,9 +34,23 @@
     "note": "no recipe given: the skill lists recipes and asks"
   },
   {
-    "query": "make a 6s pixel dissolve of our logo",
+    "query": "make a 6s pixel dissolve that swaps 어제의 나 into 오늘의 나",
+    "should_trigger": true,
+    "note": "pixel-dissolve is implemented: text A dissolves cell by cell into text B"
+  },
+  {
+    "query": "/video:hf-motion pixel-dissolve textA=작년의 나 textB=올해의 나 pixelSize=24",
+    "should_trigger": true,
+    "note": "slash-literal: update if the skill is renamed"
+  },
+  {
+    "query": "픽셀 디졸브 레시피로 문구만 바꿔서 6초짜리 영상 뽑아줘",
+    "should_trigger": true
+  },
+  {
+    "query": "circular masks popping on the beat to reveal our product names",
     "should_trigger": false,
-    "note": "pixel-dissolve is a planned recipe, not implemented; a one-off belongs to hyperframes:motion-graphics. If it does trigger, the skill must answer not-implemented and stop, never fall back to intro-kinetic"
+    "note": "circle-pop is a planned recipe, not implemented; a one-off belongs to hyperframes:motion-graphics. If it does trigger, the skill must answer not-implemented and stop, never fall back to an implemented recipe"
   },
   {
     "query": "제품 런칭 영상 60초짜리 웹사이트 캡처해서 만들어줘",

@@ -26,13 +26,15 @@ gradients, no extra tints, no per-scene colour. A palette change is three
 `#rrggbb` parameters, and `check`'s contrast gate must still pass (accent text
 over `charcoal` and `paper`).
 
-## 4. Every cut lands on a beat
+## 4. Every cut lands on a beat (recipes with a music bed)
 
 Scene lengths are whole beats (`beat = 60 / bpm`); transition covers end on
 the cut, not after it; the music bed is regenerated for the same `bpm` and
 total. Never hand-edit `data-start` / `data-duration` — change `CONFIG` and
 run `scaffold.mjs --update`. The composition throws at load when the
 attributes and `CONFIG` disagree; treat that error as a stop, not a nuisance.
+A recipe with no music (`pixel-dissolve`) times in seconds from `CONFIG`; the
+static-attribute and `--update` rules still apply.
 
 ## 5. Verification gates, in order, none skipped
 

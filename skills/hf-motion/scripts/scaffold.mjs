@@ -10,6 +10,7 @@
 // --update   re-apply to an existing project (reads ITS CONFIG, so hand edits
 //            survive) and resync timing attributes + music.
 // --no-music skip the music bed (no numpy/ffmpeg needed; used by selfchecks).
+//            Recipes without a musicArgs export never generate one.
 import { execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
@@ -123,11 +124,15 @@ if (missing.length) {
   }
 }
 
-if (!flags.has("--no-music")) {
+// a recipe without musicArgs (pixel-dissolve) has no music bed and no bpm
+if (recipe.musicArgs && !flags.has("--no-music")) {
   execFileSync("python3", recipe.musicArgs(cfg), { cwd: out, stdio: "inherit" });
 }
 
-console.log(`[OK] ${name} scaffolded at ${out} (${total}s @ ${cfg.bpm} BPM)`);
+const music = recipe.musicArgs ? ` @ ${cfg.bpm} BPM` : ", no music";
+const size = recipe.canvas ? ` --width ${recipe.canvas.width} --height ${recipe.canvas.height}` : "";
+console.log(`[OK] ${name} scaffolded at ${out} (${total}s${music})`);
+console.log(`verify-render args: --duration ${total}${recipe.musicArgs ? ` --bpm ${cfg.bpm}` : ""}${size}`);
 console.log(`Next (PLUGIN=$(bash ${join(here, "find-hf-plugin.sh")})):`);
 for (const c of ["lint .", "check .", "snapshot . --at <times>", "render . -q high -o ./renders/video.mp4"]) {
   console.log(`  (cd ${out} && node "$PLUGIN/skills/hyperframes/scripts/plugin-cli.mjs" ${c})`);

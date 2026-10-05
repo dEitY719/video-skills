@@ -8,11 +8,12 @@ the parameters supply every word, number and colour.
 
 | # | Name | Default | Description |
 |---|------|---------|-------------|
-| 1 | `<recipe>` or `-h`/`--help`/`help` | — | Recipe name. Omitted: list recipes and ask. Implemented: `intro-kinetic` only (15 s kinetic-typography self-intro). Planned, not implemented (`pixel-dissolve` and others): see `references/recipes/README.md` |
+| 1 | `<recipe>` or `-h`/`--help`/`help` | — | Recipe name. Omitted: list recipes and ask. Implemented: `intro-kinetic` (15 s kinetic-typography self-intro), `pixel-dissolve` (6 s word swap through a seeded pixel dissolve). Planned, not implemented (`circle-pop` and others): see `references/recipes/README.md` |
 | 2.. | `key=value` | recipe defaults | Overrides one top-level key of the recipe's `CONFIG` block. Numbers parse as numbers; lists split on `\|` (commas are legal inside an item); `[word]` inside a label or finale line marks the accent colour. Unknown keys are rejected. Per-recipe keys and limits: `references/recipes/<recipe>.md` |
 | - | `--out <dir>` | `./<recipe>` | Project directory to create. Must not exist or be empty |
 
-With no `key=value` at all, `intro-kinetic` reproduces the original verified
+With no `key=value` at all, a recipe reproduces its verified reference
+render; `intro-kinetic` reproduces the original verified
 video (the original author's own values). Use that only for the author; for
 anyone else every fact must come from them.
 
@@ -25,6 +26,8 @@ anyone else every fact must come from them.
   — variable counts; scene lengths and the total follow (29 beats at 116 BPM = 15.0 s).
 - `/video:hf-motion intro-kinetic --out ~/videos/hong-intro subsTarget=123000` —
   custom project dir; the counter lands on `12만 3천`.
+- `/video:hf-motion pixel-dissolve 'textA=작년의 나' 'textB=올해의 나' pixelSize=24` —
+  6 s swap with a finer grid; same seeded cell order on every render.
 - `/video:hf-motion -h` — print this help.
 
 ## The scripts it runs
@@ -32,8 +35,8 @@ anyone else every fact must come from them.
 | Script | Does |
 |--------|------|
 | `scripts/find-hf-plugin.sh` | Prints the official hyperframes plugin root (the dir holding `skills/hyperframes/scripts/plugin-cli.mjs`); exit 1 with install instructions when absent |
-| `scripts/scaffold.mjs <recipe> <dir> [k=v ...] [--update] [--no-music]` | Copies the template, rewrites `CONFIG`, writes the static timing attributes, copies GSAP + SFX from the hyperframes plugin, writes `package.json` / `meta.json`, generates the music bed. `--list` prints implemented recipes |
-| `scripts/verify-render.py <mp4> --duration S --bpm N` | Post-render gate: h264 1920x1080 @ 30 fps + aac, duration, audio peak, kick grid |
+| `scripts/scaffold.mjs <recipe> <dir> [k=v ...] [--update] [--no-music]` | Copies the template, rewrites `CONFIG`, writes the static timing attributes, copies GSAP + SFX from the hyperframes plugin, writes `package.json` / `meta.json`, generates the music bed (recipes that have one). Prints a `verify-render args:` line for Step 6. `--list` prints implemented recipes |
+| `scripts/verify-render.py <mp4> --duration S [--bpm N] [--width W --height H]` | Post-render gate: h264 WxH (default 1920x1080) @ 30 fps, duration; with `--bpm` also aac, audio peak, kick grid |
 
 ## Environment
 
@@ -51,6 +54,6 @@ Tools needed on `PATH`: `node` 22+ (with `npx`), `python3` + `numpy`, `ffmpeg`,
 
 - Render before you confirm the parameter table.
 - Invent a name, number, employer or claim. Missing facts are asked for.
-- Run a planned recipe, or bend `intro-kinetic` into one.
+- Run a planned recipe, or bend an implemented one into it.
 - Call `npx hyperframes` directly or run `skills update` — the official plugin
   launcher pins the CLI to the installed plugin version.

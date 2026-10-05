@@ -10,7 +10,7 @@ Run from the scaffolded project directory, with `PLUGIN` bound by
 HF lint .
 ```
 
-Pass: `0 error(s)`. Accepted warnings for `intro-kinetic` (single-file
+Pass: `0 error(s)`. Accepted warnings for every recipe (single-file
 composition by design; splitting into sub-compositions would change nothing
 on screen):
 
@@ -30,9 +30,12 @@ Pass: the last line reads `Check passed`, Runtime 0 errors, Layout 0 errors /
 0 warnings, Contrast all pass. Accepted `info` lines: `text_box_overflow` /
 `container_overflow` on a `.mask` child while it slides in (the mask reveal
 is the effect) and on the finale lines before their beat. A `content_overlap`,
-`text_occluded` warning or a contrast failure is not accepted.
+`text_occluded` warning or a contrast failure is not accepted. `pixel-dissolve`
+passes with Layout `0 issues`: its A/B overlap during the swap is marked in
+the template, never accepted ad hoc.
 
-A runtime error `intro-kinetic: #sN lasts ...s but CONFIG implies ...s` means
+A runtime error `intro-kinetic: #sN lasts ...s but CONFIG implies ...s` (or
+`pixel-dissolve: timing attributes disagree with CONFIG`) means
 the timing attributes are stale: run `scaffold.mjs <recipe> <dir> --update`.
 
 ## 3. snapshot — look at every frame
@@ -42,7 +45,10 @@ HF snapshot . --at <times> --no-end --describe false
 ```
 
 `intro-kinetic` at 120 BPM: `0.9,3.3,5.7,8.3,10.2,12.3,14.0` (one per scene,
-inside its hold). For another tempo scale by `120 / bpm` and shift scenes 4-6
+inside its hold). `pixel-dissolve`: `1.0`, `T`, `T+0.3D`, `T+0.5D`, `T+0.8D`,
+`T+D`, `5.9` (`T = transitionAt`, `D = transitionDur`; default
+`1,3,3.3,3.5,3.8,4,5.9`) — `T` must still be pure A, `T+D` pure B with no
+accent cell left. For another tempo scale by `120 / bpm` and shift scenes 4-6
 by the tool/flash count change. Read every PNG in `snapshots/` and check:
 
 - every string matches the confirmed parameters exactly;
@@ -60,12 +66,16 @@ HF render . -q high -o ./renders/video.mp4
 ## 5. verify-render.py — all [OK]
 
 ```sh
-python3 "$HFM/scripts/verify-render.py" renders/video.mp4 --duration <total> --bpm <bpm>
+python3 "$HFM/scripts/verify-render.py" renders/video.mp4 <verify-args>
 ```
+
+`<verify-args>` is the scaffold's `verify-render args:` line verbatim. A
+recipe without a music bed (`pixel-dissolve`) has no `--bpm` there: the
+audio rows below print `[SKIP]` and only the video rows gate.
 
 | Check | Expectation |
 |-------|-------------|
-| video stream | one `h264`, `1920x1080`, `r_frame_rate=30/1` |
+| video stream | one `h264`, `--width`x`--height` (default `1920x1080`), `r_frame_rate=30/1` |
 | audio stream | one `aac` |
 | duration | `<total>` from the scaffold line, +-0.05 s |
 | audio peak | -6 .. -0.1 dBFS (bed is normalised to -1 dBFS; SFX sit on top) |

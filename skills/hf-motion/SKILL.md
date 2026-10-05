@@ -1,10 +1,11 @@
 ---
 name: hf-motion
-# Description is 327 chars, over check 16's 250-char WARN band, on purpose — the four trigger phrases (three Korean) and their "Use for" clause take ~145; pipeline and recipe list live in Role and references/help.md.
+# Description is 360 chars, over check 16's 250-char WARN band, on purpose — the five trigger phrases (four Korean, one per implemented recipe at least) and their "Use for" clause take ~180; pipeline and recipe list live in Role and references/help.md.
 description: >-
   Render a parameterized HyperFrames motion graphic from a named recipe.
   Use for /video:hf-motion, "자기소개 모션그래픽 만들어줘",
   "intro-kinetic 레시피로 영상 뽑아줘", "이름만 바꿔서 같은 인트로 영상",
+  "pixel-dissolve 로 문구 바꾸는 6초 영상",
   "make my kinetic intro video with these params". Needs the official
   hyperframes plugin. Not for freeform video (hyperframes:motion-graphics)
   or a planned recipe.
@@ -86,9 +87,9 @@ Only after Step 5 is clean and the params are confirmed:
 ```sh
 PLUGIN=$(bash "$HFM/scripts/find-hf-plugin.sh") || exit 1   # re-bind: new Bash call
 cd <out-dir> && node "$PLUGIN/skills/hyperframes/scripts/plugin-cli.mjs" render . -q high -o ./renders/video.mp4
-python3 "$HFM/scripts/verify-render.py" renders/video.mp4 --duration <total> --bpm <bpm>
+python3 "$HFM/scripts/verify-render.py" renders/video.mp4 <verify-args>
 ```
-`<total>` / `<bpm>`: from the scaffold's `[OK] ... (<total>s @ <bpm> BPM)` line.
+`<verify-args>`: copied verbatim from the scaffold's `verify-render args:` line.
 
 ## Step 7: Report
 
