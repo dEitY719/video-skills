@@ -5,6 +5,10 @@
 // GSAP is copied from the official hyperframes plugin at scaffold time (its
 // own standard license); the font is the bundled OFL face. The laptop is drawn
 // in CSS inside index.html: no image asset at all.
+// NanumSquare (SIL OFL 1.1, OFL.txt beside it) is shared by the CJK recipes: it lives in
+// templates/_shared and the scaffold copies it.
+export const sharedAssets = ["assets/fonts/NanumSquare_acEB.ttf", "assets/fonts/OFL.txt"];
+
 export const pluginAssets = {
   "assets/vendor/gsap.min.js": { glob: "skills/*/assets/vendor/gsap.min.js" },
 };

@@ -10,6 +10,10 @@
 // counter ("I", "K", "ㄱ") is refused here, before anything is written.
 import { readFileSync } from "node:fs";
 
+// NanumSquare (SIL OFL 1.1, OFL.txt beside it) is shared by the CJK recipes: it lives in
+// templates/_shared and the scaffold copies it.
+export const sharedAssets = ["assets/fonts/NanumSquare_acEB.ttf", "assets/fonts/OFL.txt"];
+
 export const pluginAssets = {
   "assets/vendor/gsap.min.js": { glob: "skills/*/assets/vendor/gsap.min.js" },
 };
@@ -22,7 +26,7 @@ const BOX = { w: 920, h: 600 }; // the word's outline box on the hero frame
 const MARGIN = 0.9; // the landing rect is this fraction of the largest one in the hole
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
-const FONT = new URL("./assets/fonts/NanumSquare_acEB.ttf", import.meta.url);
+const FONT = new URL("../_shared/assets/fonts/NanumSquare_acEB.ttf", import.meta.url);
 
 // ---- TrueType reader: cmap (4/12), hmtx, loca, glyf (simple + composite)
 let font;

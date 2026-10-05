@@ -8,6 +8,10 @@
 // Files taken from the official hyperframes plugin at scaffold time, never
 // redistributed from this repo: GSAP ships under its own standard license and
 // the SFX under the Pixabay Content License (both bundled by that plugin).
+// NanumSquare (SIL OFL 1.1, OFL.txt beside it) is shared by the CJK recipes: it lives in
+// templates/_shared and the scaffold copies it.
+export const sharedAssets = ["assets/fonts/NanumSquare_acEB.ttf", "assets/fonts/OFL.txt"];
+
 export const pluginAssets = {
   "assets/vendor/gsap.min.js": { glob: "skills/*/assets/vendor/gsap.min.js" },
   "assets/sfx/impact-bass-1.mp3": { path: "skills/media-use/audio/assets/sfx/impact-bass-1.mp3" },
