@@ -1,11 +1,12 @@
 ---
 name: hf-motion
-# Description is 384 chars, over check 16's 250-char WARN band, on purpose — the six trigger phrases (five Korean, one per implemented recipe at least) and their "Use for" clause take ~210; pipeline and recipe list live in Role and references/help.md.
+# Description is 397 chars, over check 16's 250-char WARN band, on purpose — the seven trigger phrases (six Korean, one per implemented recipe at least) and their "Use for" clause take ~225; pipeline and recipe list live in Role and references/help.md.
 description: >-
   Render a parameterized HyperFrames motion graphic from a named recipe.
   Use for /video:hf-motion, "자기소개 모션그래픽 만들어줘",
   "intro-kinetic 레시피로 영상 뽑아줘", "이름만 바꿔서 같은 인트로 영상",
   "pixel-dissolve 로 문구 바꾸는 6초 영상", "circle-pop 원 팝 전환 영상",
+  "노트북 화면 줌인",
   "make my kinetic intro video with these params". Needs the official
   hyperframes plugin. Not for freeform video (hyperframes:motion-graphics)
   or a planned recipe.

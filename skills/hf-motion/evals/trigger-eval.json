@@ -58,6 +58,20 @@
     "note": "slash-literal: update if the skill is renamed"
   },
   {
+    "query": "노트북 화면 속으로 카메라가 들어가는 6초 영상 만들어줘, 화면 문구는 모션 그래픽",
+    "should_trigger": true,
+    "note": "screen-dive is implemented: camera dives into a drawn laptop screen"
+  },
+  {
+    "query": "/video:hf-motion screen-dive screenText=새로운 화면 diveAt=1.5",
+    "should_trigger": true,
+    "note": "slash-literal: update if the skill is renamed"
+  },
+  {
+    "query": "screen-dive recipe with my own screen text, zoom into the laptop until it fills the frame",
+    "should_trigger": true
+  },
+  {
     "query": "camera flies through the letters of our brand name into the next scene",
     "should_trigger": false,
     "note": "letter-flythrough is a planned recipe, not implemented; a one-off belongs to hyperframes:motion-graphics. If it does trigger, the skill must answer not-implemented and stop, never fall back to an implemented recipe"

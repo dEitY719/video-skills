@@ -18,7 +18,8 @@ plugin is `video`, and its one skill, `hf-motion`, turns a named **recipe** plus
 | `intro-kinetic` | implemented | 15 s kinetic-typography self-introduction, 1920x1080 @ 30 fps, 120 BPM: name slam, count-ups, tools, beat flashes, finale |
 | `pixel-dissolve` | implemented | 6 s 1080x830 word swap: text A dissolves cell by cell (seeded order) into text B; no music |
 | `circle-pop` | implemented | 6 s 1080x830 scene change: a circle pops, overshoots, fills the frame and becomes scene B; no music |
-| `text-sandwich`, `screen-dive`, `letter-flythrough` | planned — not implemented | — |
+| `screen-dive` | implemented | 6 s 1080x830 camera dive into a CSS-drawn laptop's screen until the screen text is full-frame; no music |
+| `text-sandwich`, `letter-flythrough` | planned — not implemented | — |
 
 Parameters, limits and timelines: one file per recipe under
 [`skills/hf-motion/references/recipes/`](skills/hf-motion/references/recipes/).

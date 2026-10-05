@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Self-check for scaffold.mjs + the intro-kinetic, pixel-dissolve and circle-pop recipes. Offline: a fake
+# Self-check for scaffold.mjs + the intro-kinetic, pixel-dissolve, circle-pop and screen-dive recipes. Offline: a fake
 # hyperframes plugin supplies the copied assets, and --no-music skips numpy.
 #
 #   bash skills/hf-motion/scripts/scaffold.selfcheck.sh
@@ -83,7 +83,7 @@ node "$S" intro-kinetic "$TMP/x3" --no-music 'bpm=fast' >/dev/null 2>&1; chk "no
 node "$S" intro-kinetic "$TMP/x4" --no-music 'red=red' >/dev/null 2>&1; chk "non-hex colour refused" "$?" 2
 chk "refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'x*' | wc -l | tr -d ' ')" "0"
 node "$S" text-sandwich "$TMP/x5" >/dev/null 2>&1; chk "planned recipe refused" "$?" 2
-chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "circle-pop intro-kinetic pixel-dissolve "
+chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "circle-pop intro-kinetic pixel-dissolve screen-dive "
 HF_PLUGIN_ROOT="$TMP/none" node "$S" intro-kinetic "$TMP/y" --no-music >/dev/null 2>&1
 chk "missing plugin stops (exit 3)" "$?" 3
 chk "missing plugin wrote nothing" "$([ -e "$TMP/y" ] && echo y || echo n)" "n"
@@ -165,4 +165,28 @@ chk "cp radius clamped + template matches recipe.mjs" "$(node --input-type=modul
   console.log([POP === R.POP && FILL === R.FILL, radius(-1, R0, RC, OS), radius(0, R0, RC, OS), radius(POP, R0, RC, OS),
     radius(POP + FILL, R0, RC, OS), radius(POP + FILL + 0.3, R0, RC, OS), Math.abs(peak - R0 * OS) < 1, fillUp].join("/"));
 ' "$CP")" "true/0/0/200/1000/1000/true/true"
+
+# 7. screen-dive: no music bed, fixed 6 s, device leaves when the dive lands
+SD="$HERE/../templates/screen-dive"
+out=$(node "$S" screen-dive "$TMP/sd")
+chk "sd default exit" "$?" 0
+chk "sd verify-render args" "$(printf '%s\n' "$out" | sed -n 's/^verify-render args: //p')" "--duration 6 --width 1080 --height 830"
+chk "sd no music generated" "$([ -e "$TMP/sd/assets/music.wav" ] && echo y || echo n)" "n"
+chk "sd defaults" "$(cfg "$TMP/sd" '[c.screenText,c.diveAt,c.diveDur,c.deviceStyle,c.paper,c.charcoal,c.red].join("/")')" \
+    "모션 그래픽/2/2.5/laptop/#f2eee6/#1e1e1e/#e5322d"
+chk "sd total + canvas" "$(attr "$TMP/sd" stage data-duration) $(attr "$TMP/sd" stage data-width)x$(attr "$TMP/sd" stage data-height)" "6 1080x830"
+chk "sd device ends with the dive" "$(attr "$TMP/sd" device data-start)/$(attr "$TMP/sd" device data-duration)" "0/4.5"
+chk "sd screen is one DOM for all 6 s" "$(attr "$TMP/sd" screen data-start)/$(attr "$TMP/sd" screen data-duration)" "0/6"
+chk "sd gsap copied, font bundled" "$(cat "$TMP/sd/assets/vendor/gsap.min.js")$([ -s "$TMP/sd/assets/fonts/NanumSquare_acEB.ttf" ] && echo y)" "/* gsap fixture */y"
+node "$S" screen-dive "$TMP/sd2" 'screenText=Hello 새로운 화면' diveAt=1.2 diveDur=3.5 'red=#c0392b' >/dev/null
+chk "sd alt exit" "$?" 0
+chk "sd alt device window" "$(attr "$TMP/sd2" device data-duration)" "4.7"
+chk "sd alt literal Korean" "$(cfg "$TMP/sd2" c.screenText)" "Hello 새로운 화면"
+node "$S" screen-dive "$TMP/v1" diveAt=3 diveDur=3 >/dev/null 2>&1; chk "sd no hold refused" "$?" 2
+node "$S" screen-dive "$TMP/v2" diveAt=0.5 >/dev/null 2>&1; chk "sd dive before entrance refused" "$?" 2
+node "$S" screen-dive "$TMP/v3" deviceStyle=phone >/dev/null 2>&1; chk "sd unknown device refused" "$?" 2
+chk "sd refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'v*' | wc -l | tr -d ' ')" "0"
+# no image asset: the laptop is drawn in CSS; the glass is exactly the canvas ratio at half size
+chk "sd no image in template" "$(find "$SD" -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.svg' -o -name '*.webp' \) | wc -l | tr -d ' ')" "0"
+chk "sd glass = half canvas" "$(sed -n '/#glass {/,/}/p' "$SD/index.html" | grep -Eo '(width|height): [0-9]+px' | tr '\n' ' ')" "width: 540px height: 415px "
 exit "$FAIL"
