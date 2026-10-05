@@ -53,6 +53,11 @@ default and of an alternate config were frame-identical (framemd5, 180/180).
   swap; `#textA` / `#textB` carry `data-layout-allow-overlap` and
   `data-layout-allow-occlusion`. Without them `check` fails on
   `content_overlap` / `text_occluded`.
+- **Contrast is not audited mid-dissolve.** `draw()` sets
+  `data-layout-ignore` on both texts while cells are swapping: check's
+  contrast pass takes the median pixel of the text box, so half-revealed B
+  read as B's ink on A's colour (`#textB 1:1`, e.g. `transitionAt=2.5
+  transitionDur=1.5` at t=3s). Both holds are audited as usual.
 - **Accent on an accent background.** With `bgA=red` (or `bgB=red`) the
   flash cells match that background, so the dissolve reads as a straight
   swap on that side. That is the palette rule (three colours only), not a bug.
