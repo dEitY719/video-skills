@@ -33,7 +33,7 @@ the cut, not after it; the music bed is regenerated for the same `bpm` and
 total. Never hand-edit `data-start` / `data-duration` — change `CONFIG` and
 run `scaffold.mjs --update`. The composition throws at load when the
 attributes and `CONFIG` disagree; treat that error as a stop, not a nuisance.
-A recipe with no music (`pixel-dissolve`) times in seconds from `CONFIG`; the
+A recipe with no music (`pixel-dissolve`, `circle-pop`, `screen-dive`) times in seconds from `CONFIG`; the
 static-attribute and `--update` rules still apply.
 
 ## 5. Verification gates, in order, none skipped

@@ -8,7 +8,7 @@ the parameters supply every word, number and colour.
 
 | # | Name | Default | Description |
 |---|------|---------|-------------|
-| 1 | `<recipe>` or `-h`/`--help`/`help` | — | Recipe name. Omitted: list recipes and ask. Implemented: `intro-kinetic` (15 s kinetic-typography self-intro), `pixel-dissolve` (6 s word swap through a seeded pixel dissolve), `circle-pop` (6 s scene change through a popping circle that becomes scene B). Planned, not implemented: see `references/recipes/README.md` |
+| 1 | `<recipe>` or `-h`/`--help`/`help` | — | Recipe name. Omitted: list recipes and ask. Implemented: `intro-kinetic` (15 s kinetic-typography self-intro), `pixel-dissolve` (6 s word swap through a seeded pixel dissolve), `circle-pop` (6 s scene change through a popping circle that becomes scene B), `screen-dive` (6 s camera dive into a drawn laptop's screen). Planned, not implemented: see `references/recipes/README.md` |
 | 2.. | `key=value` | recipe defaults | Overrides one top-level key of the recipe's `CONFIG` block. Numbers parse as numbers; lists split on `\|` (commas are legal inside an item); `[word]` inside a label or finale line marks the accent colour. Unknown keys are rejected. Per-recipe keys and limits: `references/recipes/<recipe>.md` |
 | - | `--out <dir>` | `./<recipe>` | Project directory to create. Must not exist or be empty |
 
@@ -30,6 +30,8 @@ anyone else every fact must come from them.
   6 s swap with a finer grid; same seeded cell order on every render.
 - `/video:hf-motion circle-pop 'textA=기획서' 'textB=런칭 완료' popOrigin=0.15,0.8 popColor=charcoal` —
   6 s change; the circle pops from the lower left and becomes scene B.
+- `/video:hf-motion screen-dive 'screenText=새로운 화면' diveAt=1.5 diveDur=3` —
+  6 s dive into the laptop screen; the text ends full-frame with no bezel.
 - `/video:hf-motion -h` — print this help.
 
 ## The scripts it runs

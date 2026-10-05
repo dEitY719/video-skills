@@ -14,7 +14,7 @@ templates directory, so this table and that listing must agree.
 | `pixel-dissolve` | **implemented** | 6 s 1080x830 word swap: text A dissolves cell by cell (seeded order, accent flash) into text B. No music. [`pixel-dissolve.md`](pixel-dissolve.md) |
 | `circle-pop` | **implemented** | 6 s 1080x830 scene change: a circle pops from a chosen origin, overshoots, fills the frame and becomes scene B behind text B. No music. [`circle-pop.md`](circle-pop.md) |
 | `text-sandwich` | planned — not implemented | A keyword sandwiched between two moving text bands |
-| `screen-dive` | planned — not implemented | Camera dives into a UI screenshot and out of a detail |
+| `screen-dive` | **implemented** | 6 s 1080x830 camera dive: a CSS-drawn laptop, then one continuous scale+translate into its screen until the screen text is full-frame and the bezel is gone. No music. [`screen-dive.md`](screen-dive.md) |
 | `letter-flythrough` | planned — not implemented | Camera flies through the letters of a word |
 
 Planned recipes have no template, no parameters and no code. `hf-motion`
