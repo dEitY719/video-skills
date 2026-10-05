@@ -11,13 +11,13 @@ templates directory, so this table and that listing must agree.
 | Recipe | Status | What it is |
 |--------|--------|------------|
 | `intro-kinetic` | **implemented** | 15 s kinetic-typography self-introduction at 120 BPM: name slam, count-ups, tools, beat flashes, three-line finale. [`intro-kinetic.md`](intro-kinetic.md) |
-| `pixel-dissolve` | planned — not implemented | ~6 s logo or word assembling from / dissolving into a pixel grid |
-| `circle-pop` | planned — not implemented | Circular masks popping on the beat to reveal words or images |
-| `text-sandwich` | planned — not implemented | A keyword sandwiched between two moving text bands |
-| `screen-dive` | planned — not implemented | Camera dives into a UI screenshot and out of a detail |
-| `letter-flythrough` | planned — not implemented | Camera flies through the letters of a word |
+| `pixel-dissolve` | **implemented** | 6 s `from` word dissolving into a `to` word through a seeded pixel grid, 1080x830, silent. [`pixel-dissolve.md`](pixel-dissolve.md) |
+| `circle-pop` | **implemented** | 6 s circle pop: a red circle grows to cover the frame and a charcoal circle pops out with the next scene, 1080x830, silent. [`circle-pop.md`](circle-pop.md) |
+| `text-sandwich` | **implemented** | 6 s big word with a character PNG passing between its letters (back layer, character, front letters), 1080x830, silent. Needs `image=<png>`. [`text-sandwich.md`](text-sandwich.md) |
+| `screen-dive` | **implemented** | 6 s camera dive into a CSS laptop until the screen scene fills the frame, 1080x830, silent. [`screen-dive.md`](screen-dive.md) |
+| `letter-flythrough` | **implemented** | 6 s camera zoom through the counter of a letter (default `AI`) into the next line, vector-sharp, 1080x830, silent. [`letter-flythrough.md`](letter-flythrough.md) |
 
-Planned recipes have no template, no parameters and no code. `hf-motion`
+A recipe listed as planned (none right now) has no template, no parameters and no code. `hf-motion`
 answers a request for one with "not implemented" and stops; it does not
 approximate it with `intro-kinetic`. A one-off version of any of them belongs
 to `hyperframes:motion-graphics`.

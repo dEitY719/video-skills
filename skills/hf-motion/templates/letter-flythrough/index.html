@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=830" />
+    <title>letter-flythrough</title>
+    <script>
+      // letter-flythrough CONFIG: every piece of on-screen text and every tunable.
+      // The block between the markers is strict JSON (no comments) because the
+      // hf-motion scaffold parses and rewrites it. After a hand edit, re-run
+      // `scaffold.mjs letter-flythrough <dir> --update` so the static timing
+      // attributes follow; the timeline refuses to build if they disagree.
+      const CONFIG = /* CONFIG:BEGIN */{
+        "word": "AI",
+        "next": "프롬프트 한 줄",
+        "target": 0,
+        "duration": 6,
+        "diveStart": 1.6,
+        "diveLength": 2.4,
+        "paper": "#f2eee6",
+        "charcoal": "#1e1e1e",
+        "red": "#e5322d"
+      }/* CONFIG:END */;
+    </script>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "FlySans";
+        src: url("assets/fonts/NanumSquare_acEB.ttf") format("truetype");
+        font-weight: 800;
+        font-style: normal;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 830px; overflow: hidden; background: var(--paper); }
+      #stage {
+        position: relative; width: 1080px; height: 830px; overflow: hidden;
+        background: var(--paper); font-family: "FlySans", sans-serif; font-weight: 800;
+      }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      #cam { position: absolute; left: 0; top: 0; display: block; }
+      #cam text { font-family: "FlySans", sans-serif; font-weight: 800; fill: var(--charcoal); }
+      #cam tspan.accent { fill: var(--red); }
+      #rule { position: absolute; height: 14px; background: var(--red); }
+    </style>
+  </head>
+  <body>
+    <!-- Timing attributes below are written by the scaffold from CONFIG
+         (root data-duration is read statically by the engine, before any
+         script runs). Do not hand-edit them. -->
+    <div id="stage" data-composition-id="main" data-start="0" data-duration="6" data-fps="30" data-width="1080" data-height="830">
+      <!-- The whole camera move: one SVG whose viewBox is the camera, so every
+           zoom level is re-rasterised from vector glyphs (no bitmap scaling). -->
+      <section id="scene" class="clip" data-start="0" data-duration="6" data-track-index="0">
+        <svg id="cam" width="1080" height="830" viewBox="0 0 1080 830" data-layout-allow-overflow="true">
+          <g id="word"><text id="word-text" data-layout-allow-overlap="true" text-anchor="middle"></text></g>
+          <text id="next-text" data-layout-allow-overlap="true" text-anchor="middle"></text>
+        </svg>
+      </section>
+      <!-- Landing: the accent rule under the next line, from the end of the dive -->
+      <div id="s2" class="clip" data-start="4" data-duration="2" data-track-index="1">
+        <div id="rule"></div>
+      </div>
+    </div>
+    <script>
+      const C = CONFIG;
+      const W = 1080, H = 830, FONT = "FlySans";
+      const $ = (id) => document.getElementById(id);
+      const win = (id) => {
+        const el = $(id);
+        return { start: +el.dataset.start, end: +el.dataset.start + +el.dataset.duration, dur: +el.dataset.duration };
+      };
+      const NS = "http://www.w3.org/2000/svg";
+
+      // ---- palette: exactly three colours
+      const root = document.documentElement.style;
+      root.setProperty("--paper", C.paper);
+      root.setProperty("--charcoal", C.charcoal);
+      root.setProperty("--red", C.red);
+
+      // ---- guard: the static timing attributes must match CONFIG (same plan as recipe.mjs)
+      const diveEnd = C.diveStart + C.diveLength;
+      const plan = { scene: [0, C.duration], s2: [diveEnd, C.duration - diveEnd] };
+      for (const [id, [s, d]] of Object.entries(plan)) {
+        if (Math.abs(win(id).start - s) > 1e-3 || Math.abs(win(id).dur - d) > 1e-3) {
+          throw new Error(`letter-flythrough: #${id} is ${win(id).start}+${win(id).dur}s but CONFIG implies ${s}+${d}s; re-run scaffold --update`);
+        }
+      }
+
+      (async () => {
+        await document.fonts.load(`800 100px "${FONT}"`);
+        const chars = Array.from(C.word);
+        const T = C.target;
+
+        // ---- measure with the loaded face; the word fits 900 x 620 px
+        const mc = document.createElement("canvas").getContext("2d");
+        const measure = (text, px) => { mc.font = `800 ${px}px "${FONT}"`; return mc.measureText(text); };
+        const m1 = measure(C.word, 100);
+        const fs = Math.min(640, (900 / m1.width) * 100, (620 / (m1.actualBoundingBoxAscent + m1.actualBoundingBoxDescent)) * 100);
+        const mw = measure(C.word, fs);
+        const base = H / 2 + (mw.actualBoundingBoxAscent - mw.actualBoundingBoxDescent) / 2;
+
+        // ---- the word, one tspan per letter; the target letter is the accent
+        const wt = $("word-text");
+        wt.setAttribute("x", W / 2); wt.setAttribute("y", base); wt.setAttribute("font-size", fs);
+        chars.forEach((ch, i) => {
+          const t = document.createElementNS(NS, "tspan");
+          t.textContent = ch;
+          if (i === T) t.setAttribute("class", "accent");
+          wt.appendChild(t);
+        });
+
+        // ---- find the target letter's counter: rasterise the word, flood the
+        // outside from the border, label the enclosed background regions.
+        // Only the camera path comes from this raster; what is drawn stays vector.
+        const K = 2, CW = W * K, CH = H * K;
+        const cv = document.createElement("canvas"); cv.width = CW; cv.height = CH;
+        const g = cv.getContext("2d", { willReadFrequently: true });
+        g.font = `800 ${fs * K}px "${FONT}"`; g.textAlign = "center"; g.textBaseline = "alphabetic";
+        g.fillText(C.word, (W / 2) * K, base * K);
+        const px = g.getImageData(0, 0, CW, CH).data;
+        const lab = new Int32Array(CW * CH); // 0 free, -1 ink, -2 outside, >0 counter id
+        for (let i = 0; i < CW * CH; i++) if (px[i * 4 + 3] >= 128) lab[i] = -1;
+        const stack = [];
+        const flood = (seed, id) => {
+          let n = 0, sx = 0;
+          stack.push(seed); lab[seed] = id;
+          while (stack.length) {
+            const i = stack.pop(), x = i % CW, y = (i - x) / CW;
+            n++; sx += x;
+            if (x > 0 && lab[i - 1] === 0) { lab[i - 1] = id; stack.push(i - 1); }
+            if (x < CW - 1 && lab[i + 1] === 0) { lab[i + 1] = id; stack.push(i + 1); }
+            if (y > 0 && lab[i - CW] === 0) { lab[i - CW] = id; stack.push(i - CW); }
+            if (y < CH - 1 && lab[i + CW] === 0) { lab[i + CW] = id; stack.push(i + CW); }
+          }
+          return { n, cx: sx / n };
+        };
+        flood(0, -2);
+        const left = (W / 2 - mw.width / 2 + measure(chars.slice(0, T).join(""), fs).width) * K;
+        const right = left + measure(chars[T], fs).width * K;
+        let best = null;
+        for (let i = 0, id = 1; i < CW * CH; i++) {
+          if (lab[i] !== 0) continue;
+          const c = flood(i, id);
+          if (c.cx >= left && c.cx <= right && (!best || c.n > best.n)) best = { id, n: c.n };
+          id++;
+        }
+        if (!best) throw new Error(`letter-flythrough: '${chars[T]}' has no closed counter to fly through; pick another target letter`);
+
+        // ---- largest frame-shaped (W:H) rectangle inside that counter
+        const A = W / H;
+        const sat = new Int32Array((CW + 1) * (CH + 1)); // count of pixels NOT in the counter
+        for (let y = 0; y < CH; y++) {
+          let row = 0;
+          for (let x = 0; x < CW; x++) {
+            row += lab[y * CW + x] === best.id ? 0 : 1;
+            sat[(y + 1) * (CW + 1) + x + 1] = sat[y * (CW + 1) + x + 1] + row;
+          }
+        }
+        const clear = (cx, cy, hh) => {
+          const x0 = Math.floor(cx - hh * A), x1 = Math.ceil(cx + hh * A), y0 = cy - hh, y1 = cy + hh;
+          if (x0 < 0 || y0 < 0 || x1 >= CW || y1 >= CH) return false;
+          const s = (x, y) => sat[y * (CW + 1) + x];
+          return s(x1 + 1, y1 + 1) - s(x0, y1 + 1) - s(x1 + 1, y0) + s(x0, y0) === 0;
+        };
+        let rx = 0, ry = 0, rh = 0;
+        for (let i = 0; i < CW * CH; i++) {
+          if (lab[i] !== best.id) continue;
+          const x = i % CW, y = (i - x) / CW;
+          if (!clear(x, y, rh + 1)) continue;
+          let h = rh + 1;
+          while (clear(x, y, h + 1)) h++;
+          rx = x; ry = y; rh = h;
+        }
+        rx /= K; ry /= K; rh /= K;
+
+        // ---- end camera: 86% of that rectangle, so the counter's edge sits just off-frame
+        const Hv = 2 * rh * 0.86, Wv = Hv * A, Z1 = H / Hv;
+
+        // ---- the next scene, laid out inside the counter in world units
+        const mn = measure(C.next, 100);
+        const nfs = Math.min((0.8 * Wv / mn.width) * 100, (0.24 * Hv / (mn.actualBoundingBoxAscent + mn.actualBoundingBoxDescent)) * 100);
+        const mnf = measure(C.next, nfs);
+        const ty = ry - 0.04 * Hv; // ink-box centre, nudged up for the rule
+        const nt = $("next-text");
+        nt.textContent = C.next;
+        nt.setAttribute("x", rx); nt.setAttribute("font-size", nfs);
+        nt.setAttribute("y", ty + (mnf.actualBoundingBoxAscent - mnf.actualBoundingBoxDescent) / 2);
+
+        // ---- the accent rule under the next line, in screen space at the end camera
+        const rule = $("rule");
+        const textW = mnf.width * Z1;
+        const textBottom = H / 2 + (ty - ry) * Z1 + ((mnf.actualBoundingBoxAscent + mnf.actualBoundingBoxDescent) / 2) * Z1;
+        Object.assign(rule.style, { left: `${W / 2 - textW / 2}px`, width: `${textW}px`, top: `${textBottom + 28}px` });
+
+        // ---- timeline: dive = [CONFIG.diveStart, #s2 start]; hold to #stage end
+        const cam = $("cam");
+        const view = (p) => {
+          const z = Math.pow(Z1, p);
+          const sx = rx + (W / 2 - rx) * p, sy = ry + (H / 2 - ry) * p; // target's screen position
+          cam.setAttribute("viewBox", `${rx - sx / z} ${ry - sy / z} ${W / z} ${H / z}`);
+        };
+        const w2 = win("s2"), dive = w2.start - C.diveStart;
+        const tl = gsap.timeline({ paused: true });
+        tl.fromTo("#word", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
+        // the camera is a setter, not an onUpdate: the runtime seeks with events
+        // suppressed, so callbacks would leave a stale viewBox behind
+        let camP = 0;
+        const camera = { get p() { return camP; }, set p(v) { camP = v; view(v); } };
+        tl.fromTo(camera, { p: 0 }, { p: 1, duration: dive, ease: "power3.inOut" }, C.diveStart);
+        tl.fromTo("#next-text", { opacity: 0 }, { opacity: 1, duration: dive * 0.4, ease: "none" }, C.diveStart + dive * 0.35);
+        tl.fromTo("#rule", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "expo.out", transformOrigin: "0% 50%" }, w2.start);
+        tl.set({}, {}, win("stage").end);
+        view(0);
+        window.__timelines["main"] = tl;
+        tl.seek(0);
+      })();
+    </script>
+  </body>
+</html>

@@ -82,3 +82,18 @@ Manual equivalents, if the script cannot run:
 ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration -of compact renders/video.mp4
 ffmpeg -hide_banner -i renders/video.mp4 -af volumedetect -vn -f null - 2>&1 | grep max_volume
 ```
+
+## Silent recipes (every recipe except `intro-kinetic`)
+
+`pixel-dissolve`, `circle-pop`, `text-sandwich`, `screen-dive` and
+`letter-flythrough` are 1080x830, 30 fps, no audio, no bpm. Gates 1-4 are the
+same; their accepted lint warning is `nested_structure_needs_subcomposition`
+(the per-recipe file lists any `check` info it accepts, such as `text_occluded`
+under a cover). Snapshot times are in the recipe file. Gate 5 becomes:
+
+```sh
+python3 "$HFM/scripts/verify-render.py" renders/video.mp4 --duration <total> --silent --width 1080 --height 830
+```
+
+It checks one h264 stream at the given size and 30/1, no audio stream, and the
+duration. `--bpm` is not passed.

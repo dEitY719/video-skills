@@ -1,10 +1,11 @@
 ---
 name: hf-motion
-# Description is 327 chars, over check 16's 250-char WARN band, on purpose — the four trigger phrases (three Korean) and their "Use for" clause take ~145; pipeline and recipe list live in Role and references/help.md.
+# Description is ~420 chars, over check 16's 250-char WARN band, on purpose — the trigger phrases (Korean and English) and their "Use for" clause need the room; pipeline and recipe list live in Role and references/help.md.
 description: >-
-  Render a parameterized HyperFrames motion graphic from a named recipe.
-  Use for /video:hf-motion, "자기소개 모션그래픽 만들어줘",
-  "intro-kinetic 레시피로 영상 뽑아줘", "이름만 바꿔서 같은 인트로 영상",
+  Render a parameterized HyperFrames motion graphic from a named recipe:
+  intro-kinetic, pixel-dissolve, circle-pop, text-sandwich, screen-dive,
+  letter-flythrough. Use for /video:hf-motion, "자기소개 모션그래픽 만들어줘",
+  "픽셀 디졸브 / 원 팝 / 글자 관통 줌 영상", "이름만 바꿔서 같은 인트로 영상",
   "make my kinetic intro video with these params". Needs the official
   hyperframes plugin. Not for freeform video (hyperframes:motion-graphics)
   or a planned recipe.
@@ -89,6 +90,8 @@ cd <out-dir> && node "$PLUGIN/skills/hyperframes/scripts/plugin-cli.mjs" render 
 python3 "$HFM/scripts/verify-render.py" renders/video.mp4 --duration <total> --bpm <bpm>
 ```
 `<total>` / `<bpm>`: from the scaffold's `[OK] ... (<total>s @ <bpm> BPM)` line.
+Silent recipes (all but `intro-kinetic`): `--silent --width 1080 --height 830`, no `--bpm`.
+`text-sandwich` takes the user's PNG as `image=<path>` (copied into `assets/`).
 
 ## Step 7: Report
 

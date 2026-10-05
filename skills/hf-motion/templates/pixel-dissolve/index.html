@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=830" />
+    <title>pixel-dissolve</title>
+    <script>
+      // pixel-dissolve CONFIG: every piece of on-screen text and every tunable.
+      // The block between the markers is strict JSON (no comments) because the
+      // hf-motion scaffold parses and rewrites it. After a hand edit, re-run
+      // `scaffold.mjs pixel-dissolve <dir> --update` so the static timing
+      // attributes follow; the timeline refuses to build if they disagree.
+      const CONFIG = /* CONFIG:BEGIN */{
+        "from": "어제의 나",
+        "to": "오늘의 나",
+        "duration": 6,
+        "switchAt": 3,
+        "cols": 24,
+        "rows": 18,
+        "paper": "#f2eee6",
+        "charcoal": "#1e1e1e",
+        "red": "#e5322d"
+      }/* CONFIG:END */;
+    </script>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "DissolveSans";
+        src: url("assets/fonts/NanumSquare_acEB.ttf") format("truetype");
+        font-weight: 800;
+        font-style: normal;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 830px; overflow: hidden; background: var(--charcoal); }
+      #stage {
+        position: relative; width: 1080px; height: 830px; overflow: hidden;
+        background: var(--charcoal); font-family: "DissolveSans", sans-serif; font-weight: 800;
+      }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      .content {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 36px; text-align: center;
+      }
+      .word { font-size: 190px; line-height: 1.1; white-space: nowrap; letter-spacing: -0.02em; }
+      #sA { background: var(--paper); color: var(--charcoal); }
+      #sB { background: var(--charcoal); color: var(--paper); }
+      #sB-bar { width: 360px; height: 18px; background: var(--red); }
+      #dz { z-index: 5; }
+      .cell { position: absolute; background: var(--red); opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <!-- Timing attributes below are written by the scaffold from CONFIG
+         (root data-duration is read statically by the engine, before any
+         script runs). Do not hand-edit them. -->
+    <div id="stage" data-composition-id="main" data-start="0" data-duration="6" data-fps="30" data-width="1080" data-height="830">
+      <!-- Scene A: the "from" word on paper -->
+      <section id="sA" class="clip" data-start="0" data-duration="3" data-track-index="0">
+        <div class="content"><div id="sA-word" class="word"></div></div>
+      </section>
+      <!-- Scene B: the "to" word on charcoal, red rule underneath -->
+      <section id="sB" class="clip" data-start="3" data-duration="3" data-track-index="0">
+        <div class="content">
+          <div id="sB-word" class="word"></div>
+          <div id="sB-bar"></div>
+        </div>
+      </section>
+      <!-- Dissolve: a grid of red cells flips on over A, the cut happens under
+           a full cover at switchAt, then the cells flip off over B -->
+      <div id="dz" class="clip" data-layout-allow-occlusion="true" data-start="2.4" data-duration="1.2" data-track-index="1"></div>
+    </div>
+
+    <script>
+      const C = CONFIG;
+      const $ = (id) => document.getElementById(id);
+      const win = (id) => {
+        const el = $(id);
+        return { start: +el.dataset.start, end: +el.dataset.start + +el.dataset.duration, dur: +el.dataset.duration };
+      };
+      const W = 1080, H = 830, HALF = 0.6; // HALF = each dissolve phase, same as recipe.mjs
+
+      // ---- palette: exactly three colours
+      const root = document.documentElement.style;
+      root.setProperty("--paper", C.paper);
+      root.setProperty("--charcoal", C.charcoal);
+      root.setProperty("--red", C.red);
+      document.title = C.from + " / " + C.to;
+
+      // ---- guard: the static timing attributes must match CONFIG
+      const want = { sA: [0, C.switchAt], sB: [C.switchAt, C.duration - C.switchAt], dz: [C.switchAt - HALF, 2 * HALF] };
+      for (const [id, [s0, d0]] of Object.entries(want)) {
+        const w = win(id);
+        if (Math.abs(w.start - s0) > 1e-3 || Math.abs(w.dur - d0) > 1e-3) {
+          throw new Error(`pixel-dissolve: #${id} is ${w.start}+${w.dur}s but CONFIG implies ${s0}+${d0}s; re-run scaffold --update`);
+        }
+      }
+
+      // ponytail: per-glyph width estimate (same table as intro-kinetic), shrink only
+      const fit = (text, px, maxW = 920) => {
+        let em = 0;
+        for (const ch of text) {
+          if (/[ㄱ-힣一-鿿]/.test(ch)) em += 0.95;
+          else if (/[\s,.]/.test(ch)) em += 0.3;
+          else if (/[A-Z]/.test(ch)) em += 0.7;
+          else em += 0.6;
+        }
+        return Math.min(px, Math.floor(maxW / Math.max(em, 0.01)));
+      };
+      for (const [id, text] of [["sA-word", C.from], ["sB-word", C.to]]) {
+        $(id).textContent = text;
+        $(id).style.fontSize = fit(text, 190) + "px";
+      }
+
+      // seeded PRNG (mulberry32): same cell order on every seek and every render
+      let s = 719;
+      const rand = () => {
+        s = (s + 0x6d2b79f5) | 0;
+        let t = Math.imul(s ^ (s >>> 15), 1 | s);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+
+      // integer-pixel tiling: no seams between cells
+      const cells = [];
+      for (let r = 0; r < C.rows; r++) {
+        for (let c = 0; c < C.cols; c++) {
+          const x0 = Math.round((c * W) / C.cols), x1 = Math.round(((c + 1) * W) / C.cols);
+          const y0 = Math.round((r * H) / C.rows), y1 = Math.round(((r + 1) * H) / C.rows);
+          const d = document.createElement("div");
+          d.className = "cell";
+          d.style.cssText = `left:${x0}px;top:${y0}px;width:${x1 - x0}px;height:${y1 - y0}px`;
+          $("dz").appendChild(d);
+          cells.push({ el: d, on: rand(), off: rand() });
+        }
+      }
+
+      // ---- timeline: positions = scene windows (from the DOM)
+      const tl = gsap.timeline({ paused: true });
+      const wA = win("sA"), wB = win("sB"), wd = win("dz");
+      tl.fromTo("#sA-word", { scale: 1.08 }, { scale: 1, duration: 0.8, ease: "power2.out" }, wA.start);
+      // phase 1: every cell is on one frame before the cut; phase 2 starts one frame after it
+      const step = 1 / 30;
+      cells.forEach(({ el, on, off }) => {
+        tl.set(el, { opacity: 1 }, wd.start + on * (HALF - step));
+        tl.set(el, { opacity: 0 }, wB.start + step + off * (HALF - 2 * step));
+      });
+      tl.fromTo("#sB-word", { scale: 1.06 }, { scale: 1, duration: 0.8, ease: "power2.out" }, wB.start);
+      tl.fromTo("#sB-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "expo.out" }, wB.start + HALF + 0.1);
+      tl.set({}, {}, wB.end);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

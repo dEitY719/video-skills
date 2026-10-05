@@ -7,11 +7,13 @@
 // key = a top-level key of the recipe's CONFIG block. Values are coerced to
 // the default's type: numbers parse as numbers, lists split on "|" (commas
 // are legal inside an item). Text stays literal UTF-8 end to end.
+// A key the recipe lists in `userFiles` (e.g. image=./alex.png) names a local
+// file: it is copied to <out-dir>/assets/<basename> and CONFIG holds that path.
 // --update   re-apply to an existing project (reads ITS CONFIG, so hand edits
 //            survive) and resync timing attributes + music.
 // --no-music skip the music bed (no numpy/ffmpeg needed; used by selfchecks).
 import { execFileSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -63,6 +65,16 @@ for (const pair of kv) {
     cfg[key] = Number(raw);
   } else cfg[key] = raw;
 }
+// user files: resolve and check now, copy after the project is written
+const userCopies = [];
+for (const key of recipe.userFiles ?? []) {
+  const pair = kv.findLast((p) => p.slice(0, p.indexOf("=")) === key);
+  if (!pair) continue;
+  const src = resolve(pair.slice(key.length + 1));
+  if (!existsSync(src) || !statSync(src).isFile()) die(`${key}: no such file ${src}`);
+  cfg[key] = `assets/${basename(src)}`;
+  userCopies.push([src, join(out, cfg[key])]);
+}
 const errors = recipe.validate(cfg);
 if (errors.length) die(`invalid parameters:\n  - ${errors.join("\n  - ")}`);
 
@@ -94,6 +106,16 @@ if (!update) {
   cpSync(tpl, out, { recursive: true, filter: (p) => basename(p) !== "recipe.mjs" });
 }
 writeFileSync(join(out, "index.html"), html);
+for (const [src, dest] of userCopies) {
+  mkdirSync(dirname(dest), { recursive: true });
+  cpSync(src, dest);
+}
+// sharedAssets: dest paths copied from templates/_shared/<dest> (e.g. the OFL font)
+for (const dest of recipe.sharedAssets ?? []) {
+  if (existsSync(join(out, dest))) continue;
+  mkdirSync(dirname(join(out, dest)), { recursive: true });
+  cpSync(join(templates, "_shared", dest), join(out, dest));
+}
 
 if (missing.length) {
   for (const dest of missing) {
@@ -123,11 +145,11 @@ if (missing.length) {
   }
 }
 
-if (!flags.has("--no-music")) {
+if (!flags.has("--no-music") && recipe.musicArgs) {
   execFileSync("python3", recipe.musicArgs(cfg), { cwd: out, stdio: "inherit" });
 }
 
-console.log(`[OK] ${name} scaffolded at ${out} (${total}s @ ${cfg.bpm} BPM)`);
+console.log(`[OK] ${name} scaffolded at ${out} (${total}s${cfg.bpm ? ` @ ${cfg.bpm} BPM` : ""})`);
 console.log(`Next (PLUGIN=$(bash ${join(here, "find-hf-plugin.sh")})):`);
 for (const c of ["lint .", "check .", "snapshot . --at <times>", "render . -q high -o ./renders/video.mp4"]) {
   console.log(`  (cd ${out} && node "$PLUGIN/skills/hyperframes/scripts/plugin-cli.mjs" ${c})`);

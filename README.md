@@ -16,10 +16,13 @@ plugin is `video`, and its one skill, `hf-motion`, turns a named **recipe** plus
 | Recipe | Status | Result |
 |--------|--------|--------|
 | `intro-kinetic` | implemented | 15 s kinetic-typography self-introduction, 1920x1080 @ 30 fps, 120 BPM: name slam, count-ups, tools, beat flashes, finale |
-| `pixel-dissolve`, `circle-pop`, `text-sandwich`, `screen-dive`, `letter-flythrough` | planned — not implemented | — |
+| `pixel-dissolve` | implemented | 6 s `from` word dissolving into a `to` word through a seeded pixel grid, 1080x830, silent. |
+| `circle-pop` | implemented | 6 s circle pop: a red circle grows to cover the frame and a charcoal circle pops out with the next scene, 1080x830, silent. |
+| `text-sandwich` | implemented | 6 s big word with a character PNG passing between its letters (back layer, character, front letters), 1080x830, silent. Needs `image=<png>`. |
+| `screen-dive` | implemented | 6 s camera dive into a CSS laptop until the screen scene fills the frame, 1080x830, silent. |
+| `letter-flythrough` | implemented | 6 s camera zoom through the counter of a letter (default `AI`) into the next line, vector-sharp, 1080x830, silent. |
 
-Parameters, limits and the beat timeline:
-[`skills/hf-motion/references/recipes/intro-kinetic.md`](skills/hf-motion/references/recipes/intro-kinetic.md).
+Parameters, limits and timeline per recipe: `skills/hf-motion/references/recipes/<recipe>.md`.
 
 ```
 /video:hf-motion intro-kinetic name=홍길동 team=가나다팀 years=12 subsTarget=123000 \
@@ -107,7 +110,7 @@ Full list: [`skills/hf-motion/references/constraints.md`](skills/hf-motion/refer
 ## Licensing of bundled and copied assets
 
 - `NanumSquare_acEB.ttf` — SIL Open Font License 1.1 (NAVER Corporation);
-  licence text in `skills/hf-motion/templates/intro-kinetic/assets/fonts/OFL.txt`.
+  licence text in `skills/hf-motion/templates/_shared/assets/fonts/OFL.txt`.
 - GSAP and the two SFX are **not** in this repo: the scaffold copies them from
   the installed official hyperframes plugin (GSAP standard license; Pixabay
   Content License).

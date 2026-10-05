@@ -34,9 +34,9 @@
     "note": "no recipe given: the skill lists recipes and asks"
   },
   {
-    "query": "make a 6s pixel dissolve of our logo",
-    "should_trigger": false,
-    "note": "pixel-dissolve is a planned recipe, not implemented; a one-off belongs to hyperframes:motion-graphics. If it does trigger, the skill must answer not-implemented and stop, never fall back to intro-kinetic"
+    "query": "HyperFrames로 6초짜리 픽셀 디졸브 모션 그래픽, 첫 화면은 어제의 나, 3초에 오늘의 나로 바뀌게",
+    "should_trigger": true,
+    "note": "pixel-dissolve is now an implemented recipe"
   },
   {
     "query": "제품 런칭 영상 60초짜리 웹사이트 캡처해서 만들어줘",
@@ -60,6 +60,18 @@
   },
   {
     "query": "rebase this branch onto main and fix the conflicts",
+    "should_trigger": false
+  },
+  {
+    "query": "큰 글자 AI 속으로 카메라가 뚫고 들어가는 글자 관통 줌 영상 만들어줘",
+    "should_trigger": true
+  },
+  {
+    "query": "노트북 화면 속으로 들어가는 화면 속 다이브 6초 영상",
+    "should_trigger": true
+  },
+  {
+    "query": "make a one-off logo sting for our product launch",
     "should_trigger": false
   },
   {

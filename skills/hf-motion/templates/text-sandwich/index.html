@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=830" />
+    <title>text-sandwich</title>
+    <script>
+      // text-sandwich CONFIG: the word, the character image and every tunable.
+      // The block between the markers is strict JSON (no comments) because the
+      // hf-motion scaffold parses and rewrites it. After a hand edit, re-run
+      // `scaffold.mjs text-sandwich <dir> --update` so the static timing
+      // attributes follow; the timeline refuses to build if they disagree.
+      const CONFIG = /* CONFIG:BEGIN */{
+        "word": "MOTION",
+        "image": "assets/placeholder.png",
+        "duration": 6,
+        "charHeight": 600,
+        "direction": "ltr",
+        "paper": "#f2eee6",
+        "charcoal": "#1e1e1e",
+        "red": "#e5322d"
+      }/* CONFIG:END */;
+    </script>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "SandwichSans";
+        src: url("assets/fonts/NanumSquare_acEB.ttf") format("truetype");
+        font-weight: 800;
+        font-style: normal;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 830px; overflow: hidden; background: var(--paper); }
+      #stage {
+        position: relative; width: 1080px; height: 830px; overflow: hidden;
+        background: var(--paper); font-family: "SandwichSans", sans-serif; font-weight: 800; color: var(--charcoal);
+      }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      .layer { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .word { white-space: nowrap; line-height: 1; text-shadow: 0.04em 0.04em 0 var(--red); }
+      .word > span { display: inline-block; }
+      #front .ghost { visibility: hidden; }
+      #bar { width: 100%; height: 22px; margin-top: 28px; background: var(--red); }
+      #bar-spacer { height: 50px; }
+      /* three layers: back word < character < front word (2nd, 4th, ... letters) */
+      #back { z-index: 1; }
+      #hero-lane { position: absolute; inset: 0; z-index: 2; }
+      #hero { position: absolute; left: 0; display: block; width: auto; }
+      #front { z-index: 3; }
+    </style>
+  </head>
+  <body>
+    <!-- Timing attributes below are written by the scaffold from CONFIG (root
+         data-duration is read statically by the engine, before any script
+         runs). Do not hand-edit them. -->
+    <div id="stage" data-composition-id="main" data-start="0" data-duration="6" data-fps="30" data-width="1080" data-height="830">
+      <section id="s1" class="clip" data-start="0" data-duration="6" data-track-index="0">
+        <div id="back" class="layer"><div class="wordbox"><div id="back-word" class="word"></div><div id="bar"></div></div></div>
+        <div id="hero-lane" data-layout-allow-overflow="true">
+          <img id="hero" alt="" data-layout-allow-occlusion="true" data-layout-allow-overflow="true" />
+        </div>
+        <div id="front" class="layer" aria-hidden="true"><div class="wordbox"><div id="front-word" class="word"></div><div id="bar-spacer"></div></div></div>
+      </section>
+    </div>
+    <script>
+      const C = CONFIG;
+      const $ = (id) => document.getElementById(id);
+      const win = (id) => {
+        const el = $(id);
+        return { start: +el.dataset.start, end: +el.dataset.start + +el.dataset.duration, dur: +el.dataset.duration };
+      };
+      const W = 1080, H = 830;
+
+      // ---- palette: exactly three colours (the character image is the user's own)
+      const root = document.documentElement.style;
+      root.setProperty("--paper", C.paper);
+      root.setProperty("--charcoal", C.charcoal);
+      root.setProperty("--red", C.red);
+
+      // ---- guard: the static timing attributes must match CONFIG
+      if (Math.abs(win("s1").dur - C.duration) > 1e-3) {
+        throw new Error(`text-sandwich: #s1 lasts ${win("s1").dur}s but CONFIG says ${C.duration}s; re-run scaffold --update`);
+      }
+
+      // ponytail: per-glyph width estimate, not a measured fit; shrinks only.
+      // Move to __hyperframes.fitTextFontSize after fonts.ready if a word overflows.
+      let em = 0;
+      for (const ch of C.word) {
+        if (/[ㄱ-힣一-鿿]/.test(ch)) em += 0.95;
+        else if (/[A-Z0-9]/.test(ch)) em += 0.72;
+        else if (/\s/.test(ch)) em += 0.3;
+        else em += 0.6;
+      }
+      const px = Math.min(260, Math.floor(960 / Math.max(em, 0.01)));
+
+      // ---- two identical copies of the word; the front copy shows the 2nd, 4th, ... letters
+      const letters = [...C.word];
+      const fill = (el, front) => letters.map((ch, i) => {
+        const s = document.createElement("span");
+        s.textContent = ch;
+        s.setAttribute("data-layout-allow-overlap", "true"); // back/front copies share one box by design
+        s.setAttribute("data-layout-allow-occlusion", "true"); // the character covers back letters by design
+        if (front && i % 2 === 0) s.className = "ghost";
+        el.style.fontSize = px + "px";
+        el.appendChild(s);
+        return s;
+      });
+      const back = fill($("back-word"), false), front = fill($("front-word"), true);
+      const hero = $("hero");
+      hero.src = C.image;
+      hero.style.height = C.charHeight + "px";
+      hero.style.top = (H - C.charHeight) / 2 + "px";
+
+      // ---- timeline: positions = scene window (from the DOM) + fixed offsets.
+      // Registered only once the image has decoded, so no frame is captured
+      // before the character exists.
+      const build = () => {
+        const tl = gsap.timeline({ paused: true });
+        const w1 = win("s1");
+        letters.forEach((_, i) => {
+          tl.fromTo([back[i], front[i]], { y: 90, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power4.out" }, w1.start + 0.1 + i * 0.07);
+        });
+        const walkIn = w1.start + 0.9, walkOut = w1.end - 1.2;
+        const off = { xPercent: -100, x: 0 }, on = { xPercent: 0, x: W };
+        const [from, to] = C.direction === "rtl" ? [on, off] : [off, on];
+        tl.fromTo(hero, from, { ...to, duration: walkOut - walkIn, ease: "none" }, walkIn);
+        const step = 0.25, n = Math.floor((walkOut - walkIn) / step);
+        tl.fromTo(hero, { y: 0 }, { y: -16, duration: step / 2, ease: "sine.inOut", repeat: n * 2 - 1, yoyo: true }, walkIn);
+        tl.fromTo("#bar", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "expo.out", transformOrigin: "left center" }, walkOut);
+        tl.set({}, {}, w1.end);
+
+        window.__timelines["main"] = tl;
+        tl.seek(0);
+      };
+      hero.decode().then(build, () => { throw new Error(`text-sandwich: cannot load image '${C.image}' (PNG under assets/)`); });
+    </script>
+  </body>
+</html>

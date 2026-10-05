@@ -28,6 +28,9 @@ over `charcoal` and `paper`).
 
 ## 4. Every cut lands on a beat
 
+Applies to recipes with a `bpm` (`intro-kinetic`). Silent recipes have no beat
+grid; their cut time is the `switchAt` / `diveStart` parameter instead.
+
 Scene lengths are whole beats (`beat = 60 / bpm`); transition covers end on
 the cut, not after it; the music bed is regenerated for the same `bpm` and
 total. Never hand-edit `data-start` / `data-duration` — change `CONFIG` and

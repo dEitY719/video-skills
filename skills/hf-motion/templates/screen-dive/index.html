@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=830" />
+    <title>screen-dive</title>
+    <script>
+      // screen-dive CONFIG: every piece of on-screen text and every tunable.
+      // The block between the markers is strict JSON (no comments) because the
+      // hf-motion scaffold parses and rewrites it. After a hand edit, re-run
+      // `scaffold.mjs screen-dive <dir> --update` so the static timing
+      // attributes follow; the timeline refuses to build if they disagree.
+      const CONFIG = /* CONFIG:BEGIN */{
+        "screenText": "모션 그래픽",
+        "caption": "",
+        "duration": 6,
+        "diveStart": 1.5,
+        "diveDur": 1.6,
+        "paper": "#f2eee6",
+        "charcoal": "#1e1e1e",
+        "red": "#e5322d"
+      }/* CONFIG:END */;
+    </script>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "DiveSans";
+        src: url("assets/fonts/NanumSquare_acEB.ttf") format("truetype");
+        font-weight: 800;
+        font-style: normal;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 830px; overflow: hidden; background: var(--paper); }
+      #stage {
+        position: relative; width: 1080px; height: 830px; overflow: hidden;
+        background: var(--paper); font-family: "DiveSans", sans-serif; font-weight: 800; color: var(--charcoal);
+      }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      /* camera: everything it scales; laptop is plain shapes in the palette */
+      #camera { position: absolute; inset: 0; }
+      #laptop { position: absolute; inset: 0; }
+      #lid { position: absolute; left: 304px; top: 170px; width: 472px; height: 372px; border-radius: 22px; background: var(--charcoal); }
+      #cam-dot { position: absolute; left: 233px; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
+      /* display keeps the canvas aspect (432:332 = 1080:830) so it can cover the frame exactly */
+      #display {
+        position: absolute; left: 20px; top: 20px; width: 432px; height: 332px; overflow: hidden; background: var(--paper);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+      }
+      #deck { position: absolute; left: 240px; top: 542px; width: 600px; height: 22px; border-radius: 4px 4px 16px 16px; background: var(--charcoal); }
+      #notch { position: absolute; left: 255px; top: 0; width: 90px; height: 7px; border-radius: 0 0 6px 6px; background: var(--paper); }
+      #caption { position: absolute; left: 0; right: 0; top: 600px; text-align: center; font-size: 34px; white-space: nowrap; }
+      .mask { overflow: hidden; padding: 0 0 0.12em; line-height: 1.1; }
+      .mask > span { display: block; }
+      #title { font-size: 56px; white-space: nowrap; }
+      #bar { width: 120px; height: 10px; background: var(--red); }
+    </style>
+  </head>
+  <body>
+    <!-- Timing attributes below are written by the scaffold from CONFIG
+         (root data-duration is read statically by the engine, before any
+         script runs). Do not hand-edit them. -->
+    <div id="stage" data-composition-id="main" data-start="0" data-duration="6" data-fps="30" data-width="1080" data-height="830">
+      <section id="s1" class="clip" data-start="0" data-duration="6" data-track-index="0">
+        <div id="camera" data-layout-allow-overflow="true">
+          <div id="laptop">
+            <div id="lid">
+              <div id="cam-dot"></div>
+              <div id="display">
+                <div class="mask"><span id="title"></span></div>
+                <div id="bar"></div>
+              </div>
+            </div>
+            <div id="deck"><div id="notch"></div></div>
+          </div>
+          <div id="caption"></div>
+        </div>
+      </section>
+    </div>
+    <script>
+      const C = CONFIG;
+      const $ = (id) => document.getElementById(id);
+      const win = (id) => {
+        const el = $(id);
+        return { start: +el.dataset.start, end: +el.dataset.start + +el.dataset.duration, dur: +el.dataset.duration };
+      };
+
+      // ---- palette: exactly three colours
+      const root = document.documentElement.style;
+      root.setProperty("--paper", C.paper);
+      root.setProperty("--charcoal", C.charcoal);
+      root.setProperty("--red", C.red);
+
+      // ---- guard: the static timing attributes must match CONFIG
+      const w1 = win("s1");
+      if (Math.abs(win("stage").dur - C.duration) > 1e-3 || Math.abs(w1.dur - C.duration) > 1e-3) {
+        throw new Error(`screen-dive: #stage/#s1 last ${win("stage").dur}s/${w1.dur}s but CONFIG.duration is ${C.duration}s; re-run scaffold --update`);
+      }
+
+      // ponytail: per-glyph width estimate (Hangul ~0.95em, Latin ~0.6-0.7em),
+      // shrink only; recipe.mjs caps the length so the floor stays legible.
+      const fit = (text, px, maxW) => {
+        let em = 0;
+        for (const ch of text) {
+          if (/[ㄱ-힣一-鿿]/.test(ch)) em += 0.95;
+          else if (/[\s,.]/.test(ch)) em += 0.3;
+          else if (/[A-Z]/.test(ch)) em += 0.7;
+          else em += 0.6;
+        }
+        return Math.min(px, Math.floor(maxW / Math.max(em, 0.01)));
+      };
+
+      // ---- fill text from CONFIG
+      const title = $("title");
+      title.textContent = C.screenText;
+      const titlePx = fit(C.screenText, 56, 360); // 360 = display width minus 36 px margins
+      if (titlePx !== 56) title.style.fontSize = titlePx + "px";
+      const cap = $("caption");
+      if (C.caption) {
+        cap.textContent = C.caption;
+        const capPx = fit(C.caption, 34, 1000);
+        if (capPx !== 34) cap.style.fontSize = capPx + "px";
+      } else cap.style.display = "none";
+
+      // ---- camera: scale the display to cover the frame (2% overshoot hides the bezel), centred
+      const W = 1080, H = 830;
+      const lid = $("lid"), d = $("display");
+      const dx = lid.offsetLeft + d.offsetLeft, dy = lid.offsetTop + d.offsetTop;
+      const cx = dx + d.offsetWidth / 2, cy = dy + d.offsetHeight / 2;
+      const S = Math.max(W / d.offsetWidth, H / d.offsetHeight) * 1.02;
+      gsap.set("#camera", { transformOrigin: `${cx}px ${cy}px` });
+
+      // ---- timeline: intro on the laptop, dive at CONFIG.diveStart, settle, hold to the window end
+      const tl = gsap.timeline({ paused: true });
+      const t0 = w1.start, land = t0 + C.diveStart + C.diveDur;
+      tl.fromTo("#laptop", { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out" }, t0);
+      tl.fromTo("#title", { yPercent: 110 }, { yPercent: 0, duration: 0.5, ease: "power4.out" }, t0 + 0.35);
+      tl.fromTo("#bar", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "expo.out" }, t0 + 0.6);
+      if (C.caption) {
+        tl.fromTo("#caption", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out" }, t0 + 0.5);
+        tl.to("#caption", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, t0 + C.diveStart);
+      }
+      tl.fromTo("#camera", { scale: 1, x: 0, y: 0 },
+        { scale: S, x: W / 2 - cx, y: H / 2 - cy, duration: C.diveDur, ease: "power3.inOut", force3D: false }, t0 + C.diveStart);
+      tl.fromTo("#title", { scale: 1.06 }, { scale: 1, duration: 0.4, ease: "power2.out", immediateRender: false }, land);
+      tl.set({}, {}, w1.end);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

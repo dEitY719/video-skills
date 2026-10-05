@@ -2,6 +2,7 @@
 """Post-render gate for a hf-motion MP4: container, audio peak, kick grid.
 
     python3 verify-render.py renders/video.mp4 --duration 15 --bpm 120
+    python3 verify-render.py renders/video.mp4 --duration 6 --silent --width 1080 --height 830
 
 Checks (each prints [OK] / [FAIL]; exit 1 on any FAIL):
   1. ffprobe: one h264 video stream 1920x1080 @ 30 fps, one aac audio stream,
@@ -9,14 +10,13 @@ Checks (each prints [OK] / [FAIL]; exit 1 on any FAIL):
   2. audio peak: max sample between -6 dBFS and -0.1 dBFS (not silent, not clipped).
   3. kick grid: low-band (<150 Hz) onset on at least 80 % of beats k*60/bpm
      (the recipe drops one kick before the finale on purpose).
-Needs ffmpeg/ffprobe and numpy.
+--silent (recipes without music): no audio stream is expected, checks 2-3
+are skipped and --bpm is not needed. Needs ffmpeg/ffprobe; numpy unless --silent.
 """
 import argparse
 import json
 import subprocess
 import sys
-
-import numpy as np
 
 SR = 22050
 
@@ -25,11 +25,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("mp4")
     ap.add_argument("--duration", type=float, required=True)
-    ap.add_argument("--bpm", type=float, required=True)
+    ap.add_argument("--bpm", type=float)
+    ap.add_argument("--silent", action="store_true")
     ap.add_argument("--width", type=int, default=1920)
     ap.add_argument("--height", type=int, default=1080)
     ap.add_argument("--fps", default="30/1")
     a = ap.parse_args()
+    if not a.silent and not a.bpm:
+        ap.error("--bpm is required unless --silent")
     fails = 0
 
     def report(ok, msg):
@@ -47,8 +50,14 @@ def main():
            and v[0]["height"] == a.height and v[0]["r_frame_rate"] == a.fps,
            f"video {v[0]['codec_name'] if v else '-'} {v[0].get('width') if v else '-'}x"
            f"{v[0].get('height') if v else '-'} @ {v[0].get('r_frame_rate') if v else '-'}")
-    report(len(au) == 1 and au[0]["codec_name"] == "aac", f"audio {au[0]['codec_name'] if au else 'missing'}")
+    if a.silent:
+        report(not au, "no audio stream" if not au else "unexpected audio stream")
+    else:
+        report(len(au) == 1 and au[0]["codec_name"] == "aac", f"audio {au[0]['codec_name'] if au else 'missing'}")
     report(abs(dur - a.duration) <= 0.05, f"duration {dur:.3f}s (want {a.duration}s)")
+    if a.silent:
+        sys.exit(1 if fails else 0)
+    import numpy as np  # only the audio checks need it
 
     pcm = subprocess.run(
         ["ffmpeg", "-v", "error", "-i", a.mp4, "-vn", "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"],

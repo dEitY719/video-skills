@@ -14,6 +14,9 @@ export const pluginAssets = {
   "assets/sfx/whoosh-short.mp3": { path: "skills/media-use/audio/assets/sfx/whoosh-short.mp3" },
 };
 
+// Bundled font (SIL OFL 1.1) shared by every recipe: templates/_shared/<path>.
+export const sharedAssets = ["assets/fonts/NanumSquare_acEB.ttf", "assets/fonts/OFL.txt"];
+
 export const limits = { tools: [1, 3], flash: [2, 8], finale: [1, 4], bpm: [90, 150] };
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
