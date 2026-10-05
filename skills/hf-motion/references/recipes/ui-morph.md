@@ -134,6 +134,6 @@ loop check.
   (`#scene`); single file on purpose so one `CONFIG` drives everything.
 - **Colour mixing during springs** (shape charcoal <-> red, highlight fade)
   briefly blends palette colours; that is the transition, not a fourth colour.
-- **Font.** `assets/fonts/Geist-Variable.woff2` (SIL OFL 1.1, `OFL.txt` beside
+- **Font.** `assets/fonts/geist/Geist-Variable.woff2` (copied from `templates/_shared`) (SIL OFL 1.1, `OFL.txt` beside
   it) ships in this template, not `_shared`; `snapshot` must report
   `Fonts: 1 loaded`.
