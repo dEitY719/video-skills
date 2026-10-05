@@ -15,14 +15,19 @@ plugin is `video`, and its one skill, `hf-motion`, turns a named **recipe** plus
 
 | Recipe | Status | Result |
 |--------|--------|--------|
-| `intro-kinetic` | implemented | 15 s kinetic-typography self-introduction, 1920x1080 @ 30 fps, 120 BPM: name slam, count-ups, tools, beat flashes, finale |
-| `pixel-dissolve` | implemented | 6 s 1080x830 word swap: text A dissolves cell by cell (seeded order) into text B; no music |
-| `circle-pop` | implemented | 6 s 1080x830 scene change: a circle pops, overshoots, fills the frame and becomes scene B; no music |
-| `screen-dive` | implemented | 6 s 1080x830 camera dive into a CSS-drawn laptop's screen until the screen text is full-frame; no music |
-| `text-sandwich` | implemented | 6 s 1080x830 text sandwich: your character image crosses between the letters of a big word, in front of some and behind others; no music |
-| `letter-flythrough` | implemented | 6 s 1080x830 camera fly-through into the hole of a big letter (outlines read from the bundled font) until the next scene fills the frame; no music |
-| `ui-morph` | implemented | 14 s seamless-loop UI motion, 1440x1440 @ 30 fps, 120 BPM: one shape morphs through 14 UI states with a cursor; synthesized music, Latin text |
-| `launch-film` | implemented | 27 s keynote-style launch film, 1440x1440 @ 30 fps, 54 beats at 120 BPM: one continuous 2D take with liquid glass and a cursor; loops; takes 9..12 photos |
+| [`intro-kinetic`](docs/examples/intro-kinetic.md) | implemented | 15 s kinetic-typography self-introduction, 1920x1080 @ 30 fps, 120 BPM: name slam, count-ups, tools, beat flashes, finale |
+| [`pixel-dissolve`](docs/examples/pixel-dissolve.md) | implemented | 6 s 1080x830 word swap: text A dissolves cell by cell (seeded order) into text B; no music |
+| [`circle-pop`](docs/examples/circle-pop.md) | implemented | 6 s 1080x830 scene change: a circle pops, overshoots, fills the frame and becomes scene B; no music |
+| [`screen-dive`](docs/examples/screen-dive.md) | implemented | 6 s 1080x830 camera dive into a CSS-drawn laptop's screen until the screen text is full-frame; no music |
+| [`text-sandwich`](docs/examples/text-sandwich.md) | implemented | 6 s 1080x830 text sandwich: your character image crosses between the letters of a big word, in front of some and behind others; no music |
+| [`letter-flythrough`](docs/examples/letter-flythrough.md) | implemented | 6 s 1080x830 camera fly-through into the hole of a big letter (outlines read from the bundled font) until the next scene fills the frame; no music |
+| [`ui-morph`](docs/examples/ui-morph.md) | implemented | 14 s seamless-loop UI motion, 1440x1440 @ 30 fps, 120 BPM: one shape morphs through 14 UI states with a cursor; synthesized music, Latin text |
+| [`launch-film`](docs/examples/launch-film.md) | implemented | 27 s keynote-style launch film, 1440x1440 @ 30 fps, 54 beats at 120 BPM: one continuous 2D take with liquid glass and a cursor; loops; takes 9..12 photos |
+
+Every recipe has a worked example under [`docs/examples/`](docs/examples/): the
+exact command, parameters, timeline, verify output, variations, pitfalls, and
+the rendered MP4 so you can compare your own run against it. Click a recipe name
+in the table above.
 
 Parameters, limits and timelines: one file per recipe under
 [`skills/hf-motion/references/recipes/`](skills/hf-motion/references/recipes/).
