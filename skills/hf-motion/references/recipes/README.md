@@ -17,6 +17,7 @@ templates directory, so this table and that listing must agree.
 | `screen-dive` | **implemented** | 6 s 1080x830 camera dive: a CSS-drawn laptop, then one continuous scale+translate into its screen until the screen text is full-frame and the bezel is gone. No music. [`screen-dive.md`](screen-dive.md) |
 | `letter-flythrough` | **implemented** | 6 s 1080x830 fly-through: big letters as outlines from the bundled font, then one continuous zoom into a glyph's counter (the hole of "A") until the next scene inside it fills the frame. No music. [`letter-flythrough.md`](letter-flythrough.md) |
 | `ui-morph` | **implemented** | 14 s seamless loop, 1440x1440, 120 BPM: one shape morphs through button, loader, island, music player, slider, toggle, tabs, chart and Cmd K palette to a toast and back; Latin text only, with music. [`ui-morph.md`](ui-morph.md) |
+| `launch-film` | **implemented** | 27 s keynote-style launch film, 1440x1440, 54 beats at 120 BPM, one continuous 2D take (wordmark, iris, bento, liquid glass, phone, Mac, order, wall), loops. Needs 9..12 `photos=`. [`launch-film.md`](launch-film.md) |
 
 Planned recipes have no template, no parameters and no code. `hf-motion`
 answers a request for one with "not implemented" and stops; it does not

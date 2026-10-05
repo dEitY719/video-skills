@@ -7,7 +7,7 @@ description: >-
   "intro-kinetic 레시피로 영상 뽑아줘", "이름만 바꿔서 같은 인트로 영상",
   "pixel-dissolve 문구 전환", "circle-pop 원 팝 전환 영상",
   "노트북 화면 줌인", "텍스트 샌드위치 영상",
-  "글자 구멍 속으로 줌인", "UI 모션 루프 영상", "make my kinetic intro video". Needs the official
+  "글자 구멍 속으로 줌인", "UI 모션 루프 영상", "키노트 런치 필름", "make my kinetic intro video". Needs the official
   hyperframes plugin. Not for freeform video
   (hyperframes:motion-graphics) or a planned recipe.
 license: MIT
