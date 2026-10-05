@@ -16,10 +16,12 @@ plugin is `video`, and its one skill, `hf-motion`, turns a named **recipe** plus
 | Recipe | Status | Result |
 |--------|--------|--------|
 | `intro-kinetic` | implemented | 15 s kinetic-typography self-introduction, 1920x1080 @ 30 fps, 120 BPM: name slam, count-ups, tools, beat flashes, finale |
-| `pixel-dissolve`, `circle-pop`, `text-sandwich`, `screen-dive`, `letter-flythrough` | planned — not implemented | — |
+| `pixel-dissolve` | implemented | 6 s 1080x830 word swap: text A dissolves cell by cell (seeded order) into text B; no music |
+| `circle-pop` | implemented | 6 s 1080x830 scene change: a circle pops, overshoots, fills the frame and becomes scene B; no music |
+| `text-sandwich`, `screen-dive`, `letter-flythrough` | planned — not implemented | — |
 
-Parameters, limits and the beat timeline:
-[`skills/hf-motion/references/recipes/intro-kinetic.md`](skills/hf-motion/references/recipes/intro-kinetic.md).
+Parameters, limits and timelines: one file per recipe under
+[`skills/hf-motion/references/recipes/`](skills/hf-motion/references/recipes/).
 
 ```
 /video:hf-motion intro-kinetic name=홍길동 team=가나다팀 years=12 subsTarget=123000 \

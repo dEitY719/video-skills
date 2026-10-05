@@ -48,9 +48,19 @@
     "should_trigger": true
   },
   {
-    "query": "circular masks popping on the beat to reveal our product names",
+    "query": "아이디어가 완성된 영상으로 바뀌는 6초짜리 원 팝 전환 영상 만들어줘",
+    "should_trigger": true,
+    "note": "circle-pop is implemented: a circle pops, fills the frame and becomes scene B"
+  },
+  {
+    "query": "/video:hf-motion circle-pop textA=기획서 textB=런칭 완료 popOrigin=0.15,0.8",
+    "should_trigger": true,
+    "note": "slash-literal: update if the skill is renamed"
+  },
+  {
+    "query": "camera flies through the letters of our brand name into the next scene",
     "should_trigger": false,
-    "note": "circle-pop is a planned recipe, not implemented; a one-off belongs to hyperframes:motion-graphics. If it does trigger, the skill must answer not-implemented and stop, never fall back to an implemented recipe"
+    "note": "letter-flythrough is a planned recipe, not implemented; a one-off belongs to hyperframes:motion-graphics. If it does trigger, the skill must answer not-implemented and stop, never fall back to an implemented recipe"
   },
   {
     "query": "제품 런칭 영상 60초짜리 웹사이트 캡처해서 만들어줘",

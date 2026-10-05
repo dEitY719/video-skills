@@ -31,8 +31,8 @@ Pass: the last line reads `Check passed`, Runtime 0 errors, Layout 0 errors /
 `container_overflow` on a `.mask` child while it slides in (the mask reveal
 is the effect) and on the finale lines before their beat. A `content_overlap`,
 `text_occluded` warning or a contrast failure is not accepted. `pixel-dissolve`
-passes with Layout `0 issues`: its A/B overlap during the swap is marked in
-the template, never accepted ad hoc.
+and `circle-pop` pass with Layout `0 issues`: their A/B overlap during the
+change is marked in the template, never accepted ad hoc.
 
 A runtime error `intro-kinetic: #sN lasts ...s but CONFIG implies ...s` (or
 `pixel-dissolve: timing attributes disagree with CONFIG`) means
@@ -49,7 +49,10 @@ inside its hold). For another tempo scale by `120 / bpm` and shift scenes 4-6
 by the tool/flash count change. `pixel-dissolve`: `1.0`, `T`, `T+0.3D`,
 `T+0.5D`, `T+0.8D`, `T+D`, `5.9` (`T = transitionAt`, `D = transitionDur`;
 default `1,3,3.3,3.5,3.8,4,5.9`) — `T` must still be pure A, `T+D` pure B with
-no accent cell left. Read every PNG in `snapshots/` and check:
+no accent cell left. `circle-pop`: `1.0`, `T`, `T+0.2`, `T+0.4`, `T+0.55`,
+`T+0.7`, `T+0.9`, `5.9` (default `1,3,3.2,3.4,3.55,3.7,3.9,5.9`) — `T` pure A,
+`T+0.2` the circle larger than at `T+0.4` (the overshoot), `T+0.9` pop colour
+edge to edge with text B on it. Read every PNG in `snapshots/` and check:
 
 - every string matches the confirmed parameters exactly;
 - no tofu (empty boxes) — the bundled NanumSquare ac ExtraBold covers Hangul
@@ -70,7 +73,7 @@ python3 "$HFM/scripts/verify-render.py" renders/video.mp4 <verify-args>
 ```
 
 `<verify-args>` is the scaffold's `verify-render args:` line verbatim. A
-recipe without a music bed (`pixel-dissolve`) has no `--bpm` there: the
+recipe without a music bed (`pixel-dissolve`, `circle-pop`) has no `--bpm` there: the
 audio rows below print `[SKIP]` and only the video rows gate.
 
 | Check | Expectation |

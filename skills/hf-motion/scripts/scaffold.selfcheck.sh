@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Self-check for scaffold.mjs + the intro-kinetic and pixel-dissolve recipes. Offline: a fake
+# Self-check for scaffold.mjs + the intro-kinetic, pixel-dissolve and circle-pop recipes. Offline: a fake
 # hyperframes plugin supplies the copied assets, and --no-music skips numpy.
 #
 #   bash skills/hf-motion/scripts/scaffold.selfcheck.sh
@@ -82,8 +82,8 @@ node "$S" intro-kinetic "$TMP/x2" --no-music 'tools=a|b|c|d' >/dev/null 2>&1; ch
 node "$S" intro-kinetic "$TMP/x3" --no-music 'bpm=fast' >/dev/null 2>&1; chk "non-numeric bpm refused" "$?" 2
 node "$S" intro-kinetic "$TMP/x4" --no-music 'red=red' >/dev/null 2>&1; chk "non-hex colour refused" "$?" 2
 chk "refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'x*' | wc -l | tr -d ' ')" "0"
-node "$S" circle-pop "$TMP/x5" >/dev/null 2>&1; chk "planned recipe refused" "$?" 2
-chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "intro-kinetic pixel-dissolve "
+node "$S" no-such-recipe "$TMP/x5" >/dev/null 2>&1; chk "unknown/planned recipe refused" "$?" 2
+chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "circle-pop intro-kinetic pixel-dissolve "
 HF_PLUGIN_ROOT="$TMP/none" node "$S" intro-kinetic "$TMP/y" --no-music >/dev/null 2>&1
 chk "missing plugin stops (exit 3)" "$?" 3
 chk "missing plugin wrote nothing" "$([ -e "$TMP/y" ] && echo y || echo n)" "n"
@@ -125,4 +125,45 @@ chk "pd cell order seeded + template matches recipe.mjs" "$(node --input-type=mo
   const shuffled = a.some((v, i) => v !== i);
   console.log([n, perm, shuffled, a.join() === b.join(), a.join() === t.join()].join("/"));
 ' "$PD")" "567/true/true/true/true"
+
+# 6. circle-pop: no music bed, fixed 6 s, the circle becomes scene B
+CP="$HERE/../templates/circle-pop"
+out=$(node "$S" circle-pop "$TMP/cp")
+chk "cp default exit" "$?" 0
+chk "cp verify-render args" "$(printf '%s\n' "$out" | sed -n 's/^verify-render args: //p')" "--duration 6 --width 1080 --height 830"
+chk "cp no music generated" "$([ -e "$TMP/cp/assets/music.wav" ] && echo y || echo n)" "n"
+chk "cp defaults" "$(cfg "$TMP/cp" '[c.textA,c.textB,c.transitionAt,c.popOrigin,c.popColor,c.overshoot,c.paper,c.charcoal,c.red].join("/")')" \
+    "아이디어/완성된 영상/3/center/red/1.15/#f2eee6/#1e1e1e/#e5322d"
+chk "cp total + canvas" "$(attr "$TMP/cp" stage data-duration) $(attr "$TMP/cp" stage data-width)x$(attr "$TMP/cp" stage data-height)" "6 1080x830"
+chk "cp sA ends when the circle covers (T+0.9)" "$(attr "$TMP/cp" sA data-duration)" "3.9"
+chk "cp sB from transitionAt" "$(attr "$TMP/cp" sB data-start)/$(attr "$TMP/cp" sB data-duration)" "3/3"
+chk "cp gsap copied, font bundled" "$(cat "$TMP/cp/assets/vendor/gsap.min.js")$([ -s "$TMP/cp/assets/fonts/NanumSquare_acEB.ttf" ] && echo y)" "/* gsap fixture */y"
+node "$S" circle-pop "$TMP/cp2" 'textA=기획서' 'textB=런칭 완료' transitionAt=2.2 popOrigin=0.15,0.8 popColor=charcoal overshoot=1.4 >/dev/null
+chk "cp alt exit" "$?" 0
+chk "cp alt timing" "$(attr "$TMP/cp2" sA data-duration)/$(attr "$TMP/cp2" sB data-start)/$(attr "$TMP/cp2" sB data-duration)" "3.1/2.2/3.8"
+chk "cp alt values" "$(cfg "$TMP/cp2" '[c.textB,c.popOrigin,c.popColor,c.overshoot].join("/")')" "런칭 완료/0.15,0.8/charcoal/1.4"
+node "$S" circle-pop "$TMP/w1" transitionAt=4.2 >/dev/null 2>&1; chk "cp no hold refused" "$?" 2
+node "$S" circle-pop "$TMP/w2" overshoot=1.8 >/dev/null 2>&1; chk "cp overshoot ceiling refused" "$?" 2
+node "$S" circle-pop "$TMP/w3" overshoot=0.9 >/dev/null 2>&1; chk "cp overshoot floor refused" "$?" 2
+node "$S" circle-pop "$TMP/w4" popOrigin=1.2,0.5 >/dev/null 2>&1; chk "cp origin outside frame refused" "$?" 2
+node "$S" circle-pop "$TMP/w5" popOrigin=left >/dev/null 2>&1; chk "cp origin word refused" "$?" 2
+node "$S" circle-pop "$TMP/w6" popColor=blue >/dev/null 2>&1; chk "cp off-palette colour refused" "$?" 2
+chk "cp refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'w*' | wc -l | tr -d ' ')" "0"
+# seek safety: the template's radius() is clamped at both boundaries, peaks at
+# R0*overshoot inside the pop, never runs backwards in the fill, and its
+# POP/FILL match recipe.mjs
+chk "cp radius clamped + template matches recipe.mjs" "$(node --input-type=module -e '
+  import { readFileSync } from "node:fs";
+  const R = await import(process.argv[1] + "/recipe.mjs");
+  const h = readFileSync(process.argv[1] + "/index.html", "utf8");
+  const [, pop, fill] = h.match(/const POP = ([\d.]+), FILL = ([\d.]+);/).map(Number);
+  const POP = pop, FILL = fill;
+  const radius = eval("(" + h.slice(h.indexOf("const radius = ") + 15, h.indexOf("const draw = ")).trim().replace(/;$/, "") + ")");
+  const R0 = 200, RC = 1000, OS = 1.15, ts = Array.from({ length: 901 }, (_, i) => i / 1000);
+  const rs = ts.map((t) => radius(t, R0, RC, OS));
+  const peak = Math.max(...rs.filter((_, i) => ts[i] <= POP));
+  const fillUp = rs.every((r, i) => ts[i] <= POP || r >= rs[i - 1] - 1e-9);
+  console.log([POP === R.POP && FILL === R.FILL, radius(-1, R0, RC, OS), radius(0, R0, RC, OS), radius(POP, R0, RC, OS),
+    radius(POP + FILL, R0, RC, OS), radius(POP + FILL + 0.3, R0, RC, OS), Math.abs(peak - R0 * OS) < 1, fillUp].join("/"));
+' "$CP")" "true/0/0/200/1000/1000/true/true"
 exit "$FAIL"
