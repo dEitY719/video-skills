@@ -16,7 +16,7 @@ skeleton, swap the content.
 
 Recipes live under `skills/hf-motion/templates/<recipe>/` with their contract in
 `skills/hf-motion/references/recipes/`. `intro-kinetic`, `pixel-dissolve`, `circle-pop`,
-`screen-dive` and `text-sandwich` are implemented; the planned ones are listed there and marked as such. **Never add a recipe without
+`screen-dive`, `text-sandwich` and `letter-flythrough` are implemented; any planned one is listed there and marked as such. **Never add a recipe without
 a template, a `recipe.mjs`, a parity proof and a selfcheck case** — a name in a
 table is not a recipe.
 

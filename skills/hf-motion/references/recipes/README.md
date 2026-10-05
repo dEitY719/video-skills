@@ -15,7 +15,7 @@ templates directory, so this table and that listing must agree.
 | `circle-pop` | **implemented** | 6 s 1080x830 scene change: a circle pops from a chosen origin, overshoots, fills the frame and becomes scene B behind text B. No music. [`circle-pop.md`](circle-pop.md) |
 | `text-sandwich` | **implemented** | 6 s 1080x830 text sandwich: the user's character image (never bundled; copied in by the scaffold) crosses between the letters of a big word, in front of some and behind others. No music. [`text-sandwich.md`](text-sandwich.md) |
 | `screen-dive` | **implemented** | 6 s 1080x830 camera dive: a CSS-drawn laptop, then one continuous scale+translate into its screen until the screen text is full-frame and the bezel is gone. No music. [`screen-dive.md`](screen-dive.md) |
-| `letter-flythrough` | planned — not implemented | Camera flies through the letters of a word |
+| `letter-flythrough` | **implemented** | 6 s 1080x830 fly-through: big letters as outlines from the bundled font, then one continuous zoom into a glyph's counter (the hole of "A") until the next scene inside it fills the frame. No music. [`letter-flythrough.md`](letter-flythrough.md) |
 
 Planned recipes have no template, no parameters and no code. `hf-motion`
 answers a request for one with "not implemented" and stops; it does not
@@ -31,7 +31,8 @@ to `hyperframes:motion-graphics`.
 3. Write `recipe.mjs` (`validate`, `timing`, `pluginAssets`; `musicArgs` only
    with a music bed, `canvas` only when not 1920x1080 — the scaffold's
    `verify-render args:` line follows both; `userAssets` only when a `CONFIG`
-   key names the user's own file, which the scaffold copies in and never bundles).
+   key names the user's own file, which the scaffold copies in and never bundles;
+   `files` only when the project needs files generated from `CONFIG`).
 4. Prove the default config reproduces the original frames (pixel diff of
    snapshots), and that an alternate config passes lint/check.
 5. Add `<name>.md` here, flip the status above, extend the selfcheck.

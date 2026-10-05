@@ -114,6 +114,8 @@ if (!update) {
   cpSync(tpl, out, { recursive: true, filter: (p) => basename(p) !== "recipe.mjs" });
 }
 writeFileSync(join(out, "index.html"), html);
+// recipes that generate project files from CONFIG (letter-flythrough's glyphs.js)
+for (const [p, body] of Object.entries(recipe.files?.(cfg) ?? {})) writeFileSync(join(out, p), body);
 
 if (missing.length) {
   for (const dest of missing) {

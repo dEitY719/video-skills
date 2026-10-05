@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Self-check for scaffold.mjs + the intro-kinetic, pixel-dissolve, circle-pop, screen-dive and text-sandwich recipes. Offline: a fake
+# Self-check for scaffold.mjs + the intro-kinetic, pixel-dissolve, circle-pop, screen-dive, text-sandwich and letter-flythrough recipes. Offline: a fake
 # hyperframes plugin supplies the copied assets, and --no-music skips numpy.
 #
 #   bash skills/hf-motion/scripts/scaffold.selfcheck.sh
@@ -82,8 +82,8 @@ node "$S" intro-kinetic "$TMP/x2" --no-music 'tools=a|b|c|d' >/dev/null 2>&1; ch
 node "$S" intro-kinetic "$TMP/x3" --no-music 'bpm=fast' >/dev/null 2>&1; chk "non-numeric bpm refused" "$?" 2
 node "$S" intro-kinetic "$TMP/x4" --no-music 'red=red' >/dev/null 2>&1; chk "non-hex colour refused" "$?" 2
 chk "refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'x*' | wc -l | tr -d ' ')" "0"
-node "$S" letter-flythrough "$TMP/x5" >/dev/null 2>&1; chk "planned recipe refused" "$?" 2
-chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "circle-pop intro-kinetic pixel-dissolve screen-dive text-sandwich "
+node "$S" no-such-recipe "$TMP/x5" >/dev/null 2>&1; chk "unknown recipe refused (no planned recipe left)" "$?" 2
+chk "--list = implemented only" "$(node "$S" --list | tr '\n' ' ')" "circle-pop intro-kinetic letter-flythrough pixel-dissolve screen-dive text-sandwich "
 HF_PLUGIN_ROOT="$TMP/none" node "$S" intro-kinetic "$TMP/y" --no-music >/dev/null 2>&1
 chk "missing plugin stops (exit 3)" "$?" 3
 chk "missing plugin wrote nothing" "$([ -e "$TMP/y" ] && echo y || echo n)" "n"
@@ -231,4 +231,38 @@ node "$S" text-sandwich "$TMP/u8" 'word=ABCDEFGHIJKLM' >/dev/null 2>&1; chk "ts 
 chk "ts refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'u*' | wc -l | tr -d ' ')" "0"
 chk "ts no image in template" "$(find "$TS" -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.gif' -o -name '*.webp' \) | wc -l | tr -d ' ')" "0"
 cd "$HERE" || exit 1
+
+# 9. letter-flythrough: no music bed, fixed 6 s, glyph outlines generated from the bundled font
+LF="$HERE/../templates/letter-flythrough"
+g() { # g <project> <js-expr over GLYPHS g> -> value
+    node -e 'const window={};eval(require("fs").readFileSync(process.argv[1],"utf8"));const g=window.GLYPHS;console.log(eval(process.argv[2]))' "$1/glyphs.js" "$2"
+}
+out=$(node "$S" letter-flythrough "$TMP/lf")
+chk "lf default exit" "$?" 0
+chk "lf verify-render args" "$(printf '%s\n' "$out" | sed -n 's/^verify-render args: //p')" "--duration 6 --width 1080 --height 830"
+chk "lf no music generated" "$([ -e "$TMP/lf/assets/music.wav" ] && echo y || echo n)" "n"
+chk "lf defaults" "$(cfg "$TMP/lf" '[c.letters,c.nextText,c.diveAt,c.diveDur,c.targetGlyphIndex,c.paper,c.charcoal,c.red].join("/")')" \
+    "AI/프롬프트 한 줄/2/2/0/#f2eee6/#1e1e1e/#e5322d"
+chk "lf total + canvas" "$(attr "$TMP/lf" stage data-duration) $(attr "$TMP/lf" stage data-width)x$(attr "$TMP/lf" stage data-height)" "6 1080x830"
+chk "lf letters end with the dive" "$(attr "$TMP/lf" letters data-start)/$(attr "$TMP/lf" letters data-duration)" "0/4"
+chk "lf next scene is one DOM for all 6 s" "$(attr "$TMP/lf" next data-start)/$(attr "$TMP/lf" next data-duration)" "0/6"
+chk "lf gsap copied, font bundled" "$(cat "$TMP/lf/assets/vendor/gsap.min.js")$([ -s "$TMP/lf/assets/fonts/NanumSquare_acEB.ttf" ] && echo y)" "/* gsap fixture */y"
+# drift guard: the template's committed glyphs.js is exactly what the scaffold generates for the default
+chk "lf template glyphs.js = generated default" "$(cmp -s "$LF/glyphs.js" "$TMP/lf/glyphs.js" && echo same || echo differs)" "same"
+chk "lf glyphs for AI, landing rect at canvas ratio" "$(g "$TMP/lf" '[g.letters,g.targetGlyphIndex,Math.abs(g.rect[2]/g.rect[3]-1080/830)<0.01,g.hole.startsWith("M"),g.ink.length>g.hole.length].join("/")')" "AI/0/true/true/true"
+node "$S" letter-flythrough "$TMP/lf2" letters=OK 'nextText=Hello 다음 장면' diveAt=1.5 diveDur=3 'red=#c0392b' >/dev/null
+chk "lf alt exit" "$?" 0
+chk "lf alt letters window" "$(attr "$TMP/lf2" letters data-duration)" "4.5"
+chk "lf alt glyphs follow CONFIG" "$(g "$TMP/lf2" 'g.letters+"/"+g.targetGlyphIndex')" "OK/0"
+chk "lf alt literal Korean" "$(cfg "$TMP/lf2" c.nextText)" "Hello 다음 장면"
+node "$S" letter-flythrough "$TMP/lf2" --update letters=오늘 >/dev/null
+chk "lf update regenerates glyphs.js" "$(g "$TMP/lf2" g.letters)" "오늘"
+msg=$(node "$S" letter-flythrough "$TMP/q1" targetGlyphIndex=1 2>&1 >/dev/null); rc=$?
+chk "lf target without a counter refused" "$rc/$(printf '%s' "$msg" | grep -c "'I' (targetGlyphIndex 1) has no counter")" "2/1"
+node "$S" letter-flythrough "$TMP/q2" letters=K >/dev/null 2>&1; chk "lf letter without a counter refused" "$?" 2
+node "$S" letter-flythrough "$TMP/q3" targetGlyphIndex=2 >/dev/null 2>&1; chk "lf target index outside letters refused" "$?" 2
+node "$S" letter-flythrough "$TMP/q4" letters=ABCDEFG >/dev/null 2>&1; chk "lf more than 6 letters refused" "$?" 2
+node "$S" letter-flythrough "$TMP/q5" diveAt=3 diveDur=3 >/dev/null 2>&1; chk "lf no hold refused" "$?" 2
+node "$S" letter-flythrough "$TMP/q6" diveAt=0.5 >/dev/null 2>&1; chk "lf dive before entrance refused" "$?" 2
+chk "lf refused runs wrote nothing" "$(find "$TMP" -maxdepth 1 -name 'q*' | wc -l | tr -d ' ')" "0"
 exit "$FAIL"

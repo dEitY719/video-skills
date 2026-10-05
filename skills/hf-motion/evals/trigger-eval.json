@@ -83,8 +83,18 @@
   },
   {
     "query": "camera flies through the letters of our brand name into the next scene",
-    "should_trigger": false,
-    "note": "letter-flythrough is a planned recipe, not implemented; a one-off belongs to hyperframes:motion-graphics. If it does trigger, the skill must answer not-implemented and stop, never fall back to an implemented recipe"
+    "should_trigger": true,
+    "note": "letter-flythrough is implemented: the camera flies into a big letter's hole"
+  },
+  {
+    "query": "AI 글자 구멍 속으로 카메라가 뚫고 들어가서 다음 장면이 나오는 6초 영상",
+    "should_trigger": true,
+    "note": "letter-flythrough is implemented: zoom into the counter of A, next scene inside it"
+  },
+  {
+    "query": "/video:hf-motion letter-flythrough letters=OK nextText=다음 장면",
+    "should_trigger": true,
+    "note": "slash-literal: update if the skill is renamed"
   },
   {
     "query": "제품 런칭 영상 60초짜리 웹사이트 캡처해서 만들어줘",
