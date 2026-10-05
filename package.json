@@ -1,6 +1,6 @@
 {
   "name": "video-skills",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Skills that turn a named recipe plus parameters into a rendered HyperFrames motion graphic",
   "type": "module",
   "main": ".opencode/plugins/video.js",
