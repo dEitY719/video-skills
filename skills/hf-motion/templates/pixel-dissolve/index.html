@@ -164,9 +164,12 @@
       };
       const P = C.pixelSize;
       const cols = Math.ceil(W / P), rows = Math.ceil(H / P), N = cols * rows;
+      // one joined path + per-cell offsets: a frame slices a substring, no per-frame join
       const rects = cellOrder(N, 719).map((c) => `M${(c % cols) * P} ${Math.floor(c / cols) * P}h${P}v${P}h-${P}z`);
+      const all = rects.join(""), off = [0];
+      for (const r of rects) off.push(off[off.length - 1] + r.length);
       const NONE = "polygon(0 0, 0 0, 0 0)";
-      const cells = (from, to) => (to <= from ? NONE : `path("${rects.slice(from, to).join("")}")`);
+      const cells = (from, to) => (to <= from ? NONE : `path("${all.slice(off[from], off[to])}")`);
 
       // Cell r (in seeded order) turns accent at r/N * (D - F) and to scene B
       // F seconds later; at D every cell shows B. F = 20 % of the dissolve.
