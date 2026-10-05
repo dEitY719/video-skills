@@ -85,6 +85,8 @@ for (const key of recipe.userFiles ?? []) {
   });
   cfg[key] = list ? dests : dests[0];
 }
+const passed = new Set(kv.map((p) => p.slice(0, p.indexOf("="))));
+recipe.derive?.(cfg, passed);
 const errors = recipe.validate(cfg);
 if (errors.length) die(`invalid parameters:\n  - ${errors.join("\n  - ")}`);
 
@@ -103,7 +105,6 @@ for (const [id, [start, dur]] of Object.entries(at)) {
 
 // ---- user assets (never bundled): every source must be readable before anything is written.
 // --update re-copies only a key passed on this command line; the project already holds the rest.
-const passed = new Set(kv.map((p) => p.slice(0, p.indexOf("="))));
 const userCopies = Object.entries(recipe.userAssets || {})
   .filter(([key]) => !update || passed.has(key))
   .map(([key, dest]) => {
@@ -189,6 +190,6 @@ const size = recipe.canvas ? ` --width ${recipe.canvas.width} --height ${recipe.
 console.log(`[OK] ${name} scaffolded at ${out} (${total}s${bpm == null ? ", no music" : ` @ ${bpm} BPM`})`);
 console.log(`verify-render args: --duration ${total}${bpm == null ? "" : ` --bpm ${bpm}`}${size}`);
 console.log(`Next (PLUGIN=$(bash ${join(here, "find-hf-plugin.sh")})):`);
-for (const c of ["lint .", "check .", "snapshot . --at <times>", "render . -q high -o ./renders/video.mp4"]) {
+for (const c of ["lint .", "check .", "snapshot . --at <times> --no-end --describe false", "render . -q high -o ./renders/video.mp4"]) {
   console.log(`  (cd ${out} && node "$PLUGIN/skills/hyperframes/scripts/plugin-cli.mjs" ${c})`);
 }
