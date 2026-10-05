@@ -1,6 +1,6 @@
 ---
 name: hf-motion
-# Description is 327 chars, over check 16's 250-char WARN band, on purpose — the four trigger phrases (three Korean) alone take ~170; pipeline and recipe list live in Role and references/help.md.
+# Description is 327 chars, over check 16's 250-char WARN band, on purpose — the four trigger phrases (three Korean) and their "Use for" clause take ~145; pipeline and recipe list live in Role and references/help.md.
 description: >-
   Render a parameterized HyperFrames motion graphic from a named recipe.
   Use for /video:hf-motion, "자기소개 모션그래픽 만들어줘",
