@@ -7,6 +7,10 @@
 // is the user's own file: never bundled here. userAssets maps the CONFIG key
 // that names it to the fixed path the scaffold copies it to; the scaffold
 // refuses (and writes nothing) when that file cannot be read.
+// NanumSquare (SIL OFL 1.1, OFL.txt beside it) is shared by the CJK recipes: it lives in
+// templates/_shared and the scaffold copies it.
+export const sharedAssets = ["assets/fonts/NanumSquare_acEB.ttf", "assets/fonts/OFL.txt"];
+
 export const pluginAssets = {
   "assets/vendor/gsap.min.js": { glob: "skills/*/assets/vendor/gsap.min.js" },
 };

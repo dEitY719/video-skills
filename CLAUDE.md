@@ -35,7 +35,8 @@ committed here**: GSAP (GreenSock standard license) and the two SFX (Pixabay
 Content License) are both shipped by the official plugin, and
 `templates/<recipe>/recipe.mjs` names where. The one bundled binary is the
 font, `NanumSquare_acEB.ttf`, under SIL OFL 1.1 with `OFL.txt` beside it
-(Debian `fonts-nanum-extra` copyright, NAVER). `ui-morph` and `launch-film` share one copy of `Geist-Variable.woff2` (npm `geist`,
+(Debian `fonts-nanum-extra` copyright, NAVER), kept once in `templates/_shared/assets/fonts/`
+and copied through each recipe's `sharedAssets`. `ui-morph` and `launch-film` share one copy of `Geist-Variable.woff2` (npm `geist`,
 Vercel, SIL OFL 1.1, `OFL.txt` beside it) in `templates/_shared/assets/fonts/geist/`,
 copied via the recipe's `sharedAssets`; `launch-film` also bundles an Archivo subset
 (npm `@fontsource-variable/archivo`, SIL OFL 1.1). Do not bundle anything whose

@@ -113,7 +113,7 @@ Full list: [`skills/hf-motion/references/constraints.md`](skills/hf-motion/refer
 ## Licensing of bundled and copied assets
 
 - `NanumSquare_acEB.ttf` — SIL Open Font License 1.1 (NAVER Corporation);
-  licence text in `skills/hf-motion/templates/intro-kinetic/assets/fonts/OFL.txt`.
+  licence text in `skills/hf-motion/templates/_shared/assets/fonts/OFL.txt`.
 - GSAP and the two SFX are **not** in this repo: the scaffold copies them from
   the installed official hyperframes plugin (GSAP standard license; Pixabay
   Content License).
