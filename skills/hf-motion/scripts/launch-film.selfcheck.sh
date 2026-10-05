@@ -65,7 +65,7 @@ node "$S" launch-film "$TMP/alt" --no-music 'wordmark=Make' 'openLabel=Gallery' 
 chk "alt exit" "$?" 0
 chk "alt wordmark" "$(cfg "$TMP/alt" c.wordmark)" "Make"
 chk "alt photos in CONFIG" "$(cfg "$TMP/alt" 'c.photos[0]+"|"+c.photos[8]')" "assets/shot 1.jpg|assets/s9.png"
-chk "alt photos copied" "$(ls "$TMP/alt/assets" | grep -c -E '^(shot 1\.jpg|s[2-9]\.png)$')" "9"
+chk "alt photos copied" "$(find "$TMP/alt/assets" -maxdepth 1 -type f -regextype posix-extended -regex '.*/(shot 1\.jpg|s[2-9]\.png)' | wc -l | tr -d ' ')" "9"
 chk "alt lists" "$(cfg "$TMP/alt" '[c.frameColors.join(","),c.sizes.join(","),c.steps.join(",")].join(" ")')" "charcoal,red A3,A2,A1,A0 Paid,Making,Shipped,Arrived"
 chk "alt palette" "$(cfg "$TMP/alt" '[c.paper,c.charcoal,c.red].join(" ")')" "#fff8e7 #14213d #d62828"
 chk "alt bpm is a number" "$(cfg "$TMP/alt" 'typeof c.bpm + c.bpm')" "number110"
