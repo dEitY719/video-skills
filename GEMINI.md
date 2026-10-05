@@ -7,7 +7,7 @@ asks for a recipe video, then follow it.
 
 | Skill | Read | Use when |
 |-------|------|----------|
-| `hf-motion` | `@./skills/hf-motion/SKILL.md` | The user wants a video from a named recipe (today: `intro-kinetic`, a 15 s kinetic-typography self-intro; `pixel-dissolve` and `circle-pop`, 6 s scene changes; `screen-dive`, a 6 s dive into a laptop screen) with their own text, counts, palette or tempo. Scaffolds, verifies and renders through the official hyperframes plugin. |
+| `hf-motion` | `@./skills/hf-motion/SKILL.md` | The user wants a video from a named recipe (today: `intro-kinetic`, a 15 s kinetic-typography self-intro; `pixel-dissolve` and `circle-pop`, 6 s scene changes; `screen-dive`, a 6 s dive into a laptop screen; `text-sandwich`, a 6 s pass of your own character image between the letters of a word) with their own text, counts, palette or tempo. Scaffolds, verifies and renders through the official hyperframes plugin. |
 
 A one-off or freeform video is not this skill — that is the official
 hyperframes plugin's `motion-graphics` / `general-video`. A planned recipe

@@ -15,8 +15,8 @@ skeleton, swap the content.
 | `hf-motion` | A recipe name + `key=value` params | Scaffold the recipe's template, fill its one `CONFIG` block, regenerate the beat-locked music bed (recipes that have one), then lint → check → snapshot → render → verify through the official hyperframes plugin. |
 
 Recipes live under `skills/hf-motion/templates/<recipe>/` with their contract in
-`skills/hf-motion/references/recipes/`. `intro-kinetic`, `pixel-dissolve`, `circle-pop`
-and `screen-dive` are implemented; the planned ones are listed there and marked as such. **Never add a recipe without
+`skills/hf-motion/references/recipes/`. `intro-kinetic`, `pixel-dissolve`, `circle-pop`,
+`screen-dive` and `text-sandwich` are implemented; the planned ones are listed there and marked as such. **Never add a recipe without
 a template, a `recipe.mjs`, a parity proof and a selfcheck case** — a name in a
 table is not a recipe.
 
@@ -36,7 +36,9 @@ Content License) are both shipped by the official plugin, and
 `templates/<recipe>/recipe.mjs` names where. The one bundled binary is the
 font, `NanumSquare_acEB.ttf`, under SIL OFL 1.1 with `OFL.txt` beside it
 (Debian `fonts-nanum-extra` copyright, NAVER). Do not bundle anything whose
-licence you have not checked the same way.
+licence you have not checked the same way. A user's own image (the
+`text-sandwich` character) is never committed: the recipe's `userAssets`
+names the `CONFIG` key, and the scaffold copies the file in or refuses.
 
 ## Template rules
 

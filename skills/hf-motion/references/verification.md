@@ -34,10 +34,13 @@ is the effect) and on the finale lines before their beat. A `content_overlap`,
 and `circle-pop` pass with Layout `0 issues`: their A/B overlap during the
 change is marked in the template, never accepted ad hoc. `screen-dive` passes the same
 way: its layers scale past the canvas during the dive and carry
-`data-layout-allow-overflow`.
+`data-layout-allow-overflow`. `text-sandwich` too: its letters carry
+`data-layout-allow-overlap` / `-occlusion` (the character covering some of
+them is the effect), and its front letters must pass contrast over the
+user's image.
 
 A runtime error `intro-kinetic: #sN lasts ...s but CONFIG implies ...s` (or
-`pixel-dissolve` / `screen-dive: timing attributes disagree with CONFIG`) means
+`pixel-dissolve` / `screen-dive` / `text-sandwich: timing attributes disagree with CONFIG`) means
 the timing attributes are stale: run `scaffold.mjs <recipe> <dir> --update`.
 
 ## 3. snapshot — look at every frame
@@ -58,7 +61,11 @@ edge to edge with text B on it. `screen-dive`: `1.0`, `T`, `T+0.25D`, `T+0.5D`,
 `T+0.75D`, `T+D`, `5.9`
 (`T = diveAt`, `D = diveDur`; default `1,2,2.625,3.25,3.875,4.5,5.9`) —
 `1.0` the whole laptop with no edge clipped, `T+D` and `5.9` the screen colour
-on every border pixel (no bezel). Read every PNG in `snapshots/` and check:
+on every border pixel (no bezel). `text-sandwich`: `1.0`, `T`, `T+0.25D`,
+`T+0.5D`, `T+0.75D`, `T+D`, `5.9` (`T = passAt`, `D = passDur`; default
+`1,1.5,2.125,2.75,3.375,4,5.9`) — `1.0` the whole word risen in, `T+0.5D`
+the character in front of some letters and behind the next ones, `T+D`
+and `5.9` no character left. Read every PNG in `snapshots/` and check:
 
 - every string matches the confirmed parameters exactly;
 - no tofu (empty boxes) — the bundled NanumSquare ac ExtraBold covers Hangul
@@ -79,7 +86,7 @@ python3 "$HFM/scripts/verify-render.py" renders/video.mp4 <verify-args>
 ```
 
 `<verify-args>` is the scaffold's `verify-render args:` line verbatim. A
-recipe without a music bed (`pixel-dissolve`, `circle-pop`, `screen-dive`) has no `--bpm` there: the
+recipe without a music bed (`pixel-dissolve`, `circle-pop`, `screen-dive`, `text-sandwich`) has no `--bpm` there: the
 audio rows below print `[SKIP]` and only the video rows gate.
 
 | Check | Expectation |

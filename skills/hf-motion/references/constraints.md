@@ -24,7 +24,8 @@ inventing.
 `paper`, `charcoal`, `red` (the accent) — nothing else on screen. No
 gradients, no extra tints, no per-scene colour. A palette change is three
 `#rrggbb` parameters, and `check`'s contrast gate must still pass (accent text
-over `charcoal` and `paper`).
+over `charcoal` and `paper`). The one exception is a user-supplied image
+(`text-sandwich`'s character): its own colours are the user's content.
 
 ## 4. Every cut lands on a beat (recipes with a music bed)
 
@@ -33,7 +34,7 @@ the cut, not after it; the music bed is regenerated for the same `bpm` and
 total. Never hand-edit `data-start` / `data-duration` — change `CONFIG` and
 run `scaffold.mjs --update`. The composition throws at load when the
 attributes and `CONFIG` disagree; treat that error as a stop, not a nuisance.
-A recipe with no music (`pixel-dissolve`, `circle-pop`, `screen-dive`) times in seconds from `CONFIG`; the
+A recipe with no music (`pixel-dissolve`, `circle-pop`, `screen-dive`, `text-sandwich`) times in seconds from `CONFIG`; the
 static-attribute and `--update` rules still apply.
 
 ## 5. Verification gates, in order, none skipped

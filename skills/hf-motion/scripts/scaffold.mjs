@@ -11,8 +11,11 @@
 //            survive) and resync timing attributes + music.
 // --no-music skip the music bed (no numpy/ffmpeg needed; used by selfchecks).
 //            Recipes without a musicArgs export never generate one.
+// A recipe's userAssets ({ configKey: "assets/<file>" }) names CONFIG keys that
+// hold a path to the user's own file (relative to the cwd). The scaffold copies
+// it into the project and refuses, writing nothing, when it cannot be read.
 import { execFileSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { accessSync, constants, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -80,6 +83,22 @@ for (const [id, [start, dur]] of Object.entries(at)) {
   html = html.replace(hits[0], tag);
 }
 
+// ---- user assets (never bundled): every source must be readable before anything is written.
+// --update re-copies only a key passed on this command line; the project already holds the rest.
+const passed = new Set(kv.map((p) => p.slice(0, p.indexOf("="))));
+const userCopies = Object.entries(recipe.userAssets || {})
+  .filter(([key]) => !update || passed.has(key))
+  .map(([key, dest]) => {
+    const src = resolve(cfg[key]);
+    try {
+      if (!statSync(src).isFile()) throw new Error("not a file");
+      accessSync(src, constants.R_OK);
+    } catch {
+      die(`${key}: cannot read '${src}'. Pass ${key}=<path to your image>; it is copied to ${dest} (nothing is bundled). Nothing was written.`);
+    }
+    return [src, dest];
+  });
+
 // ---- resolve the official plugin before writing anything
 const missing = Object.keys(recipe.pluginAssets).filter((p) => !existsSync(join(out, p)));
 let plugin;
@@ -122,6 +141,11 @@ if (missing.length) {
   if (!existsSync(join(out, "meta.json"))) {
     writeFileSync(join(out, "meta.json"), JSON.stringify({ id: pkgName, name: pkgName }, null, 2) + "\n");
   }
+}
+
+for (const [src, dest] of userCopies) {
+  mkdirSync(dirname(join(out, dest)), { recursive: true });
+  cpSync(src, join(out, dest));
 }
 
 // a recipe without musicArgs (pixel-dissolve) has no music bed and no bpm
