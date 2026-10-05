@@ -154,7 +154,9 @@ on beat 12, synthesized UI sounds on the cursor's beats; no fade, so it loops.
 
 - Snapshot times, one per beat for review: `(b + 0.5) * 60 / bpm` for
   b = 0..53 (at 120 BPM `0.25,0.75,...,26.75`), plus `0` and
-  `total - 1/30` for the loop. Read every frame: strings exactly as
+  `total - 1/30` for the loop, plus `34.88 * 60 / bpm` (16.35 at 128 BPM,
+  17.44 at 120) where `landingHeadline` is whole: at beat 34.5 it is still
+  rising behind the hero. Read every frame: strings exactly as
   confirmed, no tofu, the shape of each beat as in the table.
 - Accepted lint warnings: `composition_file_too_large` and
   `nested_structure_needs_subcomposition` on `#film` (single file on purpose

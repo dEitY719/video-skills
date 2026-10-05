@@ -32,7 +32,14 @@ Pass: the last line reads `Check passed`, Runtime 0 errors, Layout 0 errors /
 is the effect) and on the finale lines before their beat. A `content_overlap`,
 `text_occluded` warning or a contrast failure is not accepted. `pixel-dissolve`
 and `circle-pop` pass with Layout `0 issues`: their A/B overlap during the
-change is marked in the template, never accepted ad hoc. `screen-dive` and
+change is marked in the template, never accepted ad hoc. The contrast pass
+takes the median pixel of a text's whole box, so text half under a
+transition (a dissolve, the circle, an `intro-kinetic` cover panel) would be
+measured against the other scene's colour, a false `1:1` whenever that colour
+is its own ink. `pixel-dissolve`, `circle-pop` and `intro-kinetic` therefore
+set the documented `data-layout-ignore` on the affected text only while the
+transition is mid-flight (attribute only, no paint); every hold is audited
+normally, so a `1:1` at any `transitionAt` / `bpm` is a real failure. `screen-dive` and
 `letter-flythrough` pass the same way: their layers scale past the canvas during the dive and carry
 `data-layout-allow-overflow`. `text-sandwich` too: its letters carry
 `data-layout-allow-overlap` / `-occlusion` (the character covering some of
@@ -97,7 +104,7 @@ audio rows below print `[SKIP]` and only the video rows gate.
 | Check | Expectation |
 |-------|-------------|
 | video stream | one `h264`, `--width`x`--height` (default `1920x1080`), `r_frame_rate=30/1` |
-| audio stream | one `aac` |
+| audio stream | one `aac` (music recipes only; `[SKIP]` for the silent ones) |
 | duration | `<total>` from the scaffold line, +-0.05 s |
 | audio peak | -6 .. -0.1 dBFS (bed is normalised to -1 dBFS; SFX sit on top) |
 | kick grid | median low-band (<150 Hz) onset ratio at beat times >= 10 and >= 5x the half-beat median |
