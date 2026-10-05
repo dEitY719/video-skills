@@ -1,7 +1,7 @@
 {
   "name": "video",
   "description": "Recipe-driven HyperFrames motion graphics. One skill, hf-motion, scaffolds a parameterized project from a named recipe (intro-kinetic: a 15 s kinetic-typography self-introduction), fills it from key=value parameters, lints, checks, snapshots and renders it through the official hyperframes plugin. Same skeleton, swap the content.",
-  "version": "0.1.7",
+  "version": "0.3.0",
   "author": {
     "name": "dEitY719",
     "url": "https://github.com/dEitY719"
