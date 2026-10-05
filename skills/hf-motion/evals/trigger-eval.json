@@ -126,6 +126,11 @@
     "note": "ui-morph is implemented"
   },
   {
+    "query": "애플 키노트 스타일 런치 영상, 사진 9장으로 리퀴드 글래스 효과 넣어서 만들어줘",
+    "should_trigger": true,
+    "note": "launch-film is implemented"
+  },
+  {
     "query": "가사에 맞춰서 비트 싱크된 뮤직비디오 만들어줘",
     "should_trigger": false
   }

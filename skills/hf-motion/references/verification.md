@@ -122,3 +122,11 @@ ffmpeg -hide_banner -i renders/video.mp4 -af volumedetect -vn -f null - 2>&1 | g
 palette rows are marked `data-layout-allow-overlap` on purpose. Snapshot times
 and the loop check are in `recipes/ui-morph.md`; `verify-render args:` carries
 `--width 1440 --height 1440`.
+
+## launch-film
+
+1440x1440, 30 fps, music bed, 54 beats. Accepted lint warnings:
+`composition_file_too_large`, `nested_structure_needs_subcomposition` on
+`#film`. Snapshot times and the loop check are in `recipes/launch-film.md`;
+`verify-render args:` carries `--width 1440 --height 1440`. Rendering takes
+about 9 minutes.

@@ -67,6 +67,24 @@ for (const pair of kv) {
     cfg[key] = Number(raw);
   } else cfg[key] = raw;
 }
+// userFiles: a CONFIG key naming local file(s), e.g. photos=a.jpg|b.jpg (list) or
+// image=./x.png; each is copied to <out-dir>/assets/<basename> and CONFIG holds that path.
+const fileCopies = [];
+for (const key of recipe.userFiles ?? []) {
+  const pair = kv.findLast((p) => p.slice(0, p.indexOf("=")) === key);
+  if (!pair) continue;
+  const list = Array.isArray(cfg[key]);
+  const raws = list ? cfg[key] : [pair.slice(key.length + 1)];
+  const dests = raws.map((raw) => {
+    const src = resolve(raw);
+    if (!existsSync(src) || !statSync(src).isFile()) die(`${key}: no such file ${src}`);
+    const dest = `assets/${basename(src)}`;
+    if (fileCopies.some(([, d]) => d === join(out, dest))) die(`${key}: two files named ${basename(src)}`);
+    fileCopies.push([src, join(out, dest)]);
+    return dest;
+  });
+  cfg[key] = list ? dests : dests[0];
+}
 const errors = recipe.validate(cfg);
 if (errors.length) die(`invalid parameters:\n  - ${errors.join("\n  - ")}`);
 
@@ -145,6 +163,10 @@ if (missing.length) {
   }
 }
 
+for (const [src, dest] of fileCopies) {
+  mkdirSync(dirname(dest), { recursive: true });
+  cpSync(src, dest);
+}
 for (const [src, dest] of userCopies) {
   mkdirSync(dirname(join(out, dest)), { recursive: true });
   cpSync(src, join(out, dest));

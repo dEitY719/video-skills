@@ -25,7 +25,7 @@ inventing.
 gradients, no extra tints, no per-scene colour. A palette change is three
 `#rrggbb` parameters, and `check`'s contrast gate must still pass (accent text
 over `charcoal` and `paper`). The one exception is a user-supplied image
-(`text-sandwich`'s character): its own colours are the user's content.
+(`text-sandwich`'s character, `launch-film`'s photos): their own colours are the user's content.
 
 ## 4. Every cut lands on a beat (recipes with a music bed)
 
