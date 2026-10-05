@@ -66,6 +66,11 @@ is written directly in GSAP.
   circle grows; `#textA` / `#textB` carry `data-layout-allow-overlap` and
   `data-layout-allow-occlusion`. Without them `check` fails on
   `content_overlap` / `text_occluded`.
+- **Contrast is not audited while the circle grows.** `draw()` sets
+  `data-layout-ignore` on both texts while the circle is partial: check's
+  contrast pass takes the median pixel of the text box, so text straddling
+  the edge read against the other scene's colour (`#textB 1:1` at
+  `transitionAt=2.5`, t=3s). Both holds are audited as usual.
 - **A corner origin covers later.** `RC` from a corner is ~1.4x the centre
   value, so the fill accelerates harder; the circle edge sweeps text A for
   longer. Look at the `T + 0.7` snapshot.
