@@ -1,6 +1,6 @@
 ---
 name: hf-motion
-# Description is 358 chars, over check 16's 250-char WARN band, on purpose: the eight implemented recipe names (~105) are the per-recipe trigger surface; per-recipe phrases live in references/help.md.
+# Description is 358 chars, over check 16's 250-char WARN band, on purpose: the eight implemented recipe names (~110) are the per-recipe trigger surface; per-recipe phrases live in references/help.md.
 description: >-
   Render a HyperFrames motion graphic from a named recipe: intro-kinetic,
   pixel-dissolve, circle-pop, screen-dive, text-sandwich, letter-flythrough,
