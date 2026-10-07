@@ -39,6 +39,22 @@ anyone else every fact must come from them.
   6 s fly-through into the hole of the "O"; a target letter with no hole is refused.
 - `/video:hf-motion -h` — print this help.
 
+## Trigger phrases
+
+The frontmatter `description` names every implemented recipe and keeps two broad
+phrases; these per-recipe phrases also route here:
+
+| Recipe | Phrases |
+|--------|---------|
+| `intro-kinetic` | "자기소개 모션그래픽 만들어줘", "intro-kinetic 레시피로 영상 뽑아줘", "이름만 바꿔서 같은 인트로 영상", "make my kinetic intro video" |
+| `pixel-dissolve` | "pixel-dissolve 문구 전환" |
+| `circle-pop` | "circle-pop 원 팝 전환 영상" |
+| `screen-dive` | "노트북 화면 줌인" |
+| `text-sandwich` | "텍스트 샌드위치 영상" |
+| `letter-flythrough` | "글자 구멍 속으로 줌인" |
+| `ui-morph` | "UI 모션 루프 영상" |
+| `launch-film` | "키노트 런치 필름" |
+
 ## The scripts it runs
 
 | Script | Does |
