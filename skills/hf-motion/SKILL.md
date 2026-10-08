@@ -1,12 +1,13 @@
 ---
 name: hf-motion
-# Description is 358 chars, over check 16's 250-char WARN band, on purpose: the eight implemented recipe names (~110) are the per-recipe trigger surface; per-recipe phrases live in references/help.md.
+# Description is 399 chars, over check 16's 250-char WARN band, on purpose: the eight implemented recipe names (~110) are the per-recipe trigger surface (per-recipe phrases live in references/help.md), and the product-launch-video boundary keeps "site launch video" asks from misfiring on launch-film (trigger-eval, #26).
 description: >-
-  Render a HyperFrames motion graphic from a named recipe: intro-kinetic,
-  pixel-dissolve, circle-pop, screen-dive, text-sandwich, letter-flythrough,
-  ui-morph, launch-film. Use for /video:hf-motion, "자기소개 모션그래픽 만들어줘",
+  Render a HyperFrames motion graphic recipe: intro-kinetic, pixel-dissolve,
+  circle-pop, screen-dive, text-sandwich, letter-flythrough, ui-morph,
+  launch-film. Use for /video:hf-motion, "자기소개 모션그래픽 만들어줘",
   "make my kinetic intro video". Needs the official hyperframes plugin. Not
-  for freeform video (hyperframes:motion-graphics) or a planned recipe.
+  for freeform video (hyperframes:motion-graphics), site launch videos
+  (hyperframes:product-launch-video) or planned recipes.
 license: MIT
 allowed-tools: Bash, Read, Skill, AskUserQuestion
 compatibility:
